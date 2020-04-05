@@ -1,8 +1,11 @@
 package com.lanagj.adviseme.lsa.weight;
 
 import com.lanagj.adviseme.lsa.weight.bag_of_words.BagOfWords;
+import com.lanagj.adviseme.lsa.weight.bag_of_words.BagOfWordsDataProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,33 +23,27 @@ class TfIdfTest {
         this.service = new TfIdf();
     }
 
-    @Test
-    void calculateWeight() {
-        BagOfWords bagOfWordsService = new BagOfWords();
-        Map<Long, List<String>> documentWordsMap = new HashMap<>();
-        documentWordsMap.put(1L, Arrays.asList("word1", "word2", "word3", "word2"));
-        documentWordsMap.put(2L, Arrays.asList("word1", "word3", "word4", "word5"));
-        documentWordsMap.put(3L, Arrays.asList("word2"));
+    @ParameterizedTest
+    @ArgumentsSource(BagOfWordsDataProvider.class)
+    void calculateWeight(Map<Long, List<BagOfWords.WordFrequency>> wordFrequency) {
 
-        Map<Long, List<BagOfWords.WordFrequency>> input = bagOfWordsService.get(documentWordsMap);
+        List<WordDocument> actual = this.service.calculateWeight(wordFrequency);
 
-        List<WordDocument> actual = this.service.calculateWeight(input);
-
-        assertEquals(documentWordsMap.size(), actual.size());
+        assertEquals(wordFrequency.size(), actual.size());
 
         // check tf-idf for each document
         WordDocument actual_1L = actual.stream().filter(wd -> wd.getDocumentId() == 1L).findFirst().get();
-        assertEquals(input.get(1L).size(), actual_1L.getValues().size());
+        assertEquals(wordFrequency.get(1L).size(), actual_1L.getValues().size());
         assertEquals((double)1/3*Math.log((double)3/2), actual_1L.getValues().get("word1"));
         assertEquals((double)2/3*Math.log((double)3/2), actual_1L.getValues().get("word2"));
 
         WordDocument actual_2L = actual.stream().filter(wd -> wd.getDocumentId() == 2L).findFirst().get();
-        assertEquals(input.get(2L).size(), actual_2L.getValues().size());
+        assertEquals(wordFrequency.get(2L).size(), actual_2L.getValues().size());
         assertEquals((double)1/4*Math.log((double)3/2), actual_2L.getValues().get("word1"));
         assertNull(actual_2L.getValues().get("word2"));
 
         WordDocument actual_3L = actual.stream().filter(wd -> wd.getDocumentId() == 3L).findFirst().get();
-        assertEquals(input.get(3L).size(), actual_3L.getValues().size());
+        assertEquals(wordFrequency.get(3L).size(), actual_3L.getValues().size());
         assertEquals((double)1/1*Math.log((double)3/2), actual_3L.getValues().get("word2"));
     }
 }

@@ -33,7 +33,7 @@ public class BagOfWords {
     }
 
     //todo change word to document id
-    public class WordFrequency {
+    public static class WordFrequency {
         String word;
         Long namOfOccurrences;
 
