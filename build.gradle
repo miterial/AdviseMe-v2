@@ -35,6 +35,13 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+
+	// apache commons-math3 (for svd)
+	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+	// tmdb api
+	implementation 'com.uwetrottmann.tmdb2:tmdb-java:2.2.0'
+
 }
 
 test {
