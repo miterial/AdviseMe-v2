@@ -15,6 +15,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Movie extends Entity {
 
+    @Getter
+    Integer tmdb;
     List<Genre> genres;
     /**
      * Localized title
@@ -25,12 +27,9 @@ public class Movie extends Entity {
     Integer voteCount;
     Float voteAverage;
 
-    /**
-     *  @param id TMDb ID
-     */
-    public Movie(@NonNull Integer id, @NonNull List<Genre> genres, @NonNull String title, @NonNull String overview, @NonNull Date releaseDate, @NonNull Integer voteCount, @NonNull Float voteAverage) {
+    public Movie(@NonNull Integer tmdb, List<Genre> genres, @NonNull String title, @NonNull String overview, @NonNull Date releaseDate, @NonNull Integer voteCount, @NonNull Float voteAverage) {
 
-        super(id);
+        this.tmdb = tmdb;
         this.genres = genres;
         this.title = title;
         this.overview = overview;
