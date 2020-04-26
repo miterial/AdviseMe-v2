@@ -1,8 +1,11 @@
 package com.lanagj.adviseme.recommender.nlp.preprocessing;
 
+import org.springframework.stereotype.Service;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Service
 public class PorterStemming {
 
     private static final Pattern PERFECTIVE_GERUND = Pattern.compile("((ив|ивши|ившись|ыв|ывши|ывшись)|((?<=[ая])(в|вши|вшись)))$");
