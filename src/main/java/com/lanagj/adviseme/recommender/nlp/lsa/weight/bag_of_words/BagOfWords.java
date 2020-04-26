@@ -1,6 +1,7 @@
 package com.lanagj.adviseme.recommender.nlp.lsa.weight.bag_of_words;
 
 import lombok.ToString;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.Function;

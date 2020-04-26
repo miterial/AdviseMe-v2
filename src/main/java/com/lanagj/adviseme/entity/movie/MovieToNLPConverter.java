@@ -24,7 +24,7 @@ public class MovieToNLPConverter {
      *
      * @return map of document IDs and preprocessed words that this document contains
      */
-    public Map<Long, List<String>> convert() {
+    public Map<Long, List<String>> transform() {
 
         Map<Long, List<String>> result = new HashMap<>();
 

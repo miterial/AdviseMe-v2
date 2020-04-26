@@ -1,12 +1,7 @@
 package com.lanagj.adviseme.recommender.nlp.lsa.weight;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Map;
 
 /**
  * Describes the cell of the word-document matrix
@@ -21,5 +16,6 @@ public class DocumentStats {
 
     Integer documentId;
 
+    @Setter
     Double value;
 }

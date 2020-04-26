@@ -5,8 +5,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +29,8 @@ public class Movie extends Entity {
     Integer voteCount;
     Float voteAverage;
 
-    public Movie(@NonNull Integer tmdbId, List<Genre> genres, @NonNull String title, @NonNull String overview, @NonNull Date releaseDate, @NonNull Integer voteCount, @NonNull Float voteAverage) {
+    @PersistenceConstructor
+    public Movie(@NonNull Integer tmdbId, List<Genre> genres, String title, @NonNull String overview, Date releaseDate, Integer voteCount, Float voteAverage) {
 
         this.tmdbId = tmdbId;
         this.genres = genres;
@@ -36,5 +39,9 @@ public class Movie extends Entity {
         this.releaseDate = releaseDate;
         this.voteCount = voteCount;
         this.voteAverage = voteAverage;
+    }
+
+    public Movie(Integer tmdbId, String overview) {
+        this(tmdbId, null, null, overview, null, null, null);
     }
 }
