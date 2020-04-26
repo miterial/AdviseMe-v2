@@ -16,7 +16,7 @@ import java.util.List;
 public class Movie extends Entity {
 
     @Getter
-    Integer tmdb;
+    Integer tmdbId;
     List<Genre> genres;
     /**
      * Localized title
@@ -27,9 +27,9 @@ public class Movie extends Entity {
     Integer voteCount;
     Float voteAverage;
 
-    public Movie(@NonNull Integer tmdb, List<Genre> genres, @NonNull String title, @NonNull String overview, @NonNull Date releaseDate, @NonNull Integer voteCount, @NonNull Float voteAverage) {
+    public Movie(@NonNull Integer tmdbId, List<Genre> genres, @NonNull String title, @NonNull String overview, @NonNull Date releaseDate, @NonNull Integer voteCount, @NonNull Float voteAverage) {
 
-        this.tmdb = tmdb;
+        this.tmdbId = tmdbId;
         this.genres = genres;
         this.title = title;
         this.overview = overview;
