@@ -24,8 +24,8 @@ public class CosineSimilarity implements SimilarityMeasure {
                 document2.stream().collect(Collectors.toMap(DocumentStats::getWord, DocumentStats::getValue)),
                 commonWords);
 
-        Set<Double> valuesDocument1 = document1.stream().map(DocumentStats::getValue).collect(Collectors.toSet());
-        Set<Double> valuesDocument2 = document2.stream().map(DocumentStats::getValue).collect(Collectors.toSet());
+        List<Double> valuesDocument1 = document1.stream().map(DocumentStats::getValue).collect(Collectors.toList());
+        List<Double> valuesDocument2 = document2.stream().map(DocumentStats::getValue).collect(Collectors.toList());
 
         double d1 = 0.0d;
         for (final Double value : valuesDocument1) {
@@ -39,7 +39,7 @@ public class CosineSimilarity implements SimilarityMeasure {
         if (d1 <= 0.0 || d2 <= 0.0) {
             cosineSimilarity = 0.0;
         } else {
-            cosineSimilarity = dotProduct / Math.sqrt(d1) * Math.sqrt(d2);
+            cosineSimilarity = dotProduct / (Math.sqrt(d1) * Math.sqrt(d2));
         }
         return cosineSimilarity;
     }

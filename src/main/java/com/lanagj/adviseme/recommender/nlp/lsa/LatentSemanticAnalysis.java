@@ -9,14 +9,10 @@ import com.lanagj.adviseme.recommender.nlp.lsa.weight.TfIdfToArrayConverter;
 import com.lanagj.adviseme.recommender.nlp.lsa.weight.bag_of_words.BagOfWords;
 import com.lanagj.adviseme.recommender.nlp.similarity.CosineSimilarity;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +40,7 @@ public class LatentSemanticAnalysis implements NaturalRanguageProcessing {
 
     //todo: make async
     @Override
-    public List<Similarity> run() {
+    public Set<Similarity> run() {
 
         // get preprocessed words
         Map<Long, List<String>> stemmedWords = this.movieToNlpConverter.transform();
@@ -65,15 +61,16 @@ public class LatentSemanticAnalysis implements NaturalRanguageProcessing {
         double[][] solved = svdService.solve(tfIdfArray, 3);
 
         // convert again to get values for corresponding documents
-        List<List<DocumentStats>> wordVector = new ArrayList<>(groupByWord.values());
+        List<List<DocumentStats>> matrix = new ArrayList<>(groupByWord.values());
         for (int i = 0; i < groupByWord.size(); i++) {    // word vector
-            for (int j = 0; j < wordVector.get(i).size(); j++) {
-                wordVector.get(i).get(j).setValue(solved[i][j]);
+            List<DocumentStats> wordVector = matrix.get(i);
+            for (int j = 0; j < wordVector.size(); j++) {
+                wordVector.get(j).setValue(solved[i][j]);
             }
         }
 
         // calculate similarity matrix with cosine measure
-        List<Similarity> result = new ArrayList<>();
+        Set<Similarity> result = new HashSet<>();
         Map<Integer, List<DocumentStats>> groupByDocument = wordDocumentMatrix.stream().collect(Collectors.groupingBy(DocumentStats::getDocumentId));
         ArrayList<List<DocumentStats>> documents = new ArrayList<>(groupByDocument.values());
         for (int i = 0; i < groupByDocument.values().size(); i++) {
