@@ -36,7 +36,7 @@ class EvaluationTest extends AdviseMeApplicationTests {
     @Test
     void mlsaDifference() {
 
-        this.tmdbImportService.importMovies(5, 2000, 2017);
+        this.tmdbImportService.importMovies(2, 2000, 2017);
 
         assertDoesNotThrow(() -> this.evaluation.mlsaDifference());
     }
