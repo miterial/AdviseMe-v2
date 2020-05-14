@@ -1,5 +1,6 @@
-package com.lanagj.adviseme.recommender.nlp.lsa.weight.bag_of_words;
+package com.lanagj.adviseme.recommender.nlp.weight.bag_of_words;
 
+import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.BagOfWords;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;

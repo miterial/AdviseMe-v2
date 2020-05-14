@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class AdviseMeApplicationTests {
+public abstract class AdviseMeApplicationTests {
 
 	@Autowired
 	protected MongoTemplate mongoTemplate;

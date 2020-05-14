@@ -1,7 +1,7 @@
 package com.lanagj.adviseme.recommender.nlp.similarity;
 
-import com.lanagj.adviseme.recommender.nlp.lsa.weight.TfIdfDataProvider;
-import com.lanagj.adviseme.recommender.nlp.lsa.weight.DocumentStats;
+import com.lanagj.adviseme.recommender.nlp.weight.TfIdfDataProvider;
+import com.lanagj.adviseme.recommender.nlp.weight.DocumentStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CosineSimilarityTest {
+class CosineCompareResultTest {
 
     CosineSimilarity cosineSimilarityService;
 

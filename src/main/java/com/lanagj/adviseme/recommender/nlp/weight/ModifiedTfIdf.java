@@ -1,19 +1,19 @@
-package com.lanagj.adviseme.recommender.nlp.lsa.weight;
+package com.lanagj.adviseme.recommender.nlp.weight;
 
-import com.lanagj.adviseme.recommender.nlp.lsa.weight.bag_of_words.BagOfWords;
+import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.BagOfWords;
 
 import java.util.*;
 
-public class TfIdf implements WeightMeasure {
+public class ModifiedTfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
 
     /**
      * @param bagOfWords representation of the test collection where key - document ID, value - calculated bagOfWords
      * @return set of rows of the word-document matrix
      */
-    public List<DocumentStats> calculateWeight(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
+    public List<MatrixCell> calculateWeight(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
 
         // matrix of size document * words
-        List<DocumentStats> result = new ArrayList<>();
+        List<MatrixCell> result = new ArrayList<>();
 
         // term (word) frequency
         Double tf;
@@ -34,6 +34,14 @@ public class TfIdf implements WeightMeasure {
             for (BagOfWords.WordFrequency wordFrequency : documentEntry.getValue()) {
                 tf = (double) wordFrequency.getNumOfOccurrences() / (double)wordsInDocumentCount.get(wordFrequency.getDocumentId()); //todo why +1?
                 idf = Math.log((double) documentsCount / (double)documentsWithWordCount.get(documentEntry.getKey()));
+
+                /*if(vectorValue1 > 0 && vectorValue2 > 0) {
+                    weight = 1.5;
+                } else if(vectorValue1 <= 0 && vectorValue2 <= 0) {
+                    weight = 0.1;
+                } else {
+                    weight = 1;
+                }*/
                 documentStats = new DocumentStats(documentEntry.getKey(), Math.toIntExact(wordFrequency.getDocumentId()), tf * idf);
                 result.add(documentStats);
             }

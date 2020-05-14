@@ -52,6 +52,11 @@ public class TmdbImportService {
 
         List<com.lanagj.adviseme.entity.movie.Movie> movieEntities = this.movieConverter.convertList(moviesBaseInfo, BaseMovie.class, com.lanagj.adviseme.entity.movie.Movie.class);
 
+        for (int i = 0; i < movieEntities.size(); i++) {
+            System.out.println((i+1));
+            System.out.println(movieEntities.get(i).getOverview() + "\n");
+        }
+
         this.movieRepository.saveAll(movieEntities);
     }
 

@@ -13,10 +13,10 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LatentSemanticAnalysisTest extends AdviseMeApplicationTests {
+class ModifiedLatentSemanticAnalysisTest extends AdviseMeApplicationTests {
 
     @Autowired
-    LatentSemanticAnalysis service;
+    ModifiedLatentSemanticAnalysis service;
 
     @BeforeEach
     void setUp() {

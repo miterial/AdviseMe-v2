@@ -1,4 +1,4 @@
-package com.lanagj.adviseme.recommender.nlp.lsa.weight;
+package com.lanagj.adviseme.recommender.nlp.weight;
 
 import org.springframework.stereotype.Component;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class TfIdfToArrayConverter {
+public class DocumentStatsToArrayConverter {
 
     /**
      * @param documentStats word vectors of N*N size sorted by document ID

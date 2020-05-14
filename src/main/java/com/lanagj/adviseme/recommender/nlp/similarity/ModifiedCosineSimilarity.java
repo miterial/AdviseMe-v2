@@ -3,16 +3,16 @@ package com.lanagj.adviseme.recommender.nlp.similarity;
 import com.lanagj.adviseme.recommender.nlp.weight.DocumentStats;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * @see <a href="https://commons.apache.org/sandbox/commons-text/jacoco/org.apache.commons.text.similarity/CosineSimilarity.java.html">
  */
 @Service
-public class CosineSimilarity implements SimilarityMeasure {
+public class ModifiedCosineSimilarity implements SimilarityMeasure {
 
     public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2) {
 
@@ -32,21 +32,33 @@ public class CosineSimilarity implements SimilarityMeasure {
         List<Double> valuesDocument2 = document2.stream().map(DocumentStats::getValue).collect(Collectors.toList());
 
         double d1 = 0.0d;
-        for (final Double value : valuesDocument1) {
-            d1 += Math.pow(value, 2);
-        }
         double d2 = 0.0d;
-        for (final Double value : valuesDocument2) {
-            d2 += Math.pow(value, 2);
+
+        double vectorValue1;
+        double vectorValue2;
+        double weight;
+
+        for (int i = 0; i < valuesDocument1.size(); i++) {
+            vectorValue1 = valuesDocument1.get(i);
+            vectorValue2 = valuesDocument2.get(i);
+
+            if(vectorValue1 > 0 && vectorValue2 > 0) {
+                weight = 1.5;
+            } else if(vectorValue1 <= 0 && vectorValue2 <= 0) {
+                weight = 0.1;
+            } else {
+                weight = 1;
+            }
+            d1 += Math.pow(vectorValue1, 2) * weight;
+            d2 += Math.pow(vectorValue2, 2) * weight;
         }
-        Double cosineSimilarity;
-        if (d1 <= 0.0 || d2 <= 0.0) {
-            cosineSimilarity = 0.0;
-        } else {
-            cosineSimilarity = dotProduct / (Math.sqrt(d1) * Math.sqrt(d2));
+        double cosineSimilarity;
+        if(d1 <= 0 || d2 <= 0) {
+            return 0.0;
         }
-        BigDecimal bd = new BigDecimal(cosineSimilarity).setScale(8, RoundingMode.HALF_EVEN);
-        return bd.doubleValue();
+        cosineSimilarity = dotProduct / (Math.sqrt(d1) * Math.sqrt(d2));
+        //cosineSimilarity = 0.5 * (cosineSimilarity + 1);
+        return cosineSimilarity;
     }
 
     /**

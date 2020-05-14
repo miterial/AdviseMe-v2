@@ -42,6 +42,15 @@ dependencies {
 	// tmdb api
 	implementation 'com.uwetrottmann.tmdb2:tmdb-java:2.2.0'
 
+	// for stemming
+	implementation group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '8.5.1'
+	implementation group: 'org.apache.lucene', name: 'lucene-core', version: '8.5.1'
+	implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '8.5.1'
+
+	// poi (for xls export)
+	implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
+
 }
 
 test {

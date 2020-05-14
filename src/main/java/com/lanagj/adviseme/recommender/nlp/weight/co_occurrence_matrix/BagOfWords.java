@@ -1,4 +1,4 @@
-package com.lanagj.adviseme.recommender.nlp.lsa.weight.bag_of_words;
+package com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix;
 
 import lombok.ToString;
 import org.springframework.stereotype.Service;
@@ -7,14 +7,12 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BagOfWords {
+@Service
+public class BagOfWords implements WordOccurrenceMatrix<BagOfWords.WordFrequency> {
 
-    // todo change value with class
     public Map<String, List<WordFrequency>> get(Map<Long, List<String>> documentWordsMap) {
 
         Map<String, List<WordFrequency>> result = new HashMap<>();
-        Map<String, Long> wordFrequency = new HashMap<>();    //key - word, value - num of occurrences in the documents
-        List<WordFrequency> q = new ArrayList<>();
 
         Set<String> allWordsInAllDocuments = documentWordsMap.values().stream().flatMap(List::stream).collect(Collectors.toSet());
 
@@ -47,12 +45,12 @@ public class BagOfWords {
     public static class WordFrequency {
 
         Long documentId;
-        Long namOfOccurrences;
+        Long numOfOccurrences;
 
-        public WordFrequency(Long documentId, Long namOfOccurrences) {
+        public WordFrequency(Long documentId, Long numOfOccurrences) {
 
             this.documentId = documentId;
-            this.namOfOccurrences = namOfOccurrences;
+            this.numOfOccurrences = numOfOccurrences;
         }
 
         public Long getDocumentId() {
@@ -62,7 +60,7 @@ public class BagOfWords {
 
         public Long getNumOfOccurrences() {
 
-            return namOfOccurrences;
+            return numOfOccurrences;
         }
 
     }
