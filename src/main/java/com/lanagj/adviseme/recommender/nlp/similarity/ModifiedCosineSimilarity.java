@@ -43,14 +43,16 @@ public class ModifiedCosineSimilarity implements SimilarityMeasure {
             vectorValue2 = valuesDocument2.get(i);
 
             if(vectorValue1 > 0 && vectorValue2 > 0) {
-                weight = 1.5;
+                weight = 0.8;
             } else if(vectorValue1 <= 0 && vectorValue2 <= 0) {
-                weight = 0.1;
+                weight = 0.2;
             } else {
                 weight = 1;
             }
-            d1 += Math.pow(vectorValue1, 2) * weight;
-            d2 += Math.pow(vectorValue2, 2) * weight;
+            d1 += vectorValue1 * weight;
+            d2 += vectorValue2 * weight;
+            /*d1 += Math.pow(vectorValue1, 2);
+            d2 += Math.pow(vectorValue2, 2);*/
         }
         double cosineSimilarity;
         if(d1 <= 0 || d2 <= 0) {
@@ -72,7 +74,16 @@ public class ModifiedCosineSimilarity implements SimilarityMeasure {
 
         double dotProduct = 0.0;
         for (String commonWord : commonWords) {
-            dotProduct += valuesFromDocument1.get(commonWord) * valuesFromDocument2.get(commonWord);
+            Double aDouble = valuesFromDocument1.get(commonWord);
+            Double aDouble1 = valuesFromDocument2.get(commonWord);
+            if (aDouble < 0) {
+                aDouble = 0.0;
+            }
+            if (aDouble1 < 0) {
+                aDouble1 = 0.0;
+            }
+            double sqrt = Math.sqrt(aDouble * aDouble1);
+            dotProduct += sqrt;
         }
 
         return dotProduct;

@@ -1,6 +1,8 @@
 package com.lanagj.adviseme.recommender.nlp.weight;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 /**

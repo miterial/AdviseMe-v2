@@ -3,15 +3,12 @@ package com.lanagj.adviseme.recommender.nlp.preprocessing;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.ru.RussianAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * https://lucene.apache.org/core/4_0_0/analyzers-common/org/apache/lucene/analysis/ru/RussianAnalyzer.html

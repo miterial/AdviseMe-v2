@@ -2,14 +2,15 @@ package com.lanagj.adviseme.recommender.nlp;
 
 import com.lanagj.adviseme.entity.movie.MovieToNLPConverter;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
+import com.lanagj.adviseme.recommender.nlp.similarity.SimilarityMeasure;
 import com.lanagj.adviseme.recommender.nlp.weight.DocumentStatsToArrayConverter;
 import com.lanagj.adviseme.recommender.nlp.weight.WeightMeasure;
 import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.WordOccurrenceMatrix;
-import com.lanagj.adviseme.recommender.nlp.similarity.SimilarityMeasure;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public abstract class NaturalRanguageProcessing {
@@ -31,5 +32,5 @@ public abstract class NaturalRanguageProcessing {
         this.similarityMeasureService = similarityMeasureService;
     }
 
-    public abstract Set<CompareResult> run();
+    public abstract CompletableFuture<Set<CompareResult>> run();
 }

@@ -31,7 +31,7 @@ class ModifiedLatentSemanticAnalysisTest extends AdviseMeApplicationTests {
     @Test
     void run() {
 
-        Set<CompareResult> results = this.service.run();
+        Set<CompareResult> results = this.service.run().join();
 
         assertEquals(3, results.size());
 

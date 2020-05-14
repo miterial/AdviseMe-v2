@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 

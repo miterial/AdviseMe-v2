@@ -1,10 +1,7 @@
 package com.lanagj.adviseme.recommender.nlp.lsa;
 
-import com.lanagj.adviseme.entity.similarity.CompareResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.concurrent.CompletableFuture;
 
 @AllArgsConstructor
 @Data

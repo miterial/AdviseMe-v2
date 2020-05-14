@@ -12,26 +12,33 @@ import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.BagOfWord
 import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.WordOccurrenceMatrix;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
 
     SVD svdService;
 
-    protected LatentSemanticAnalysis(MovieToNLPConverter movieToNlpConverter, DocumentStatsToArrayConverter weightStructureConverter, WordOccurrenceMatrix wordOccurrenceMatrix, WeightMeasure weightMeasureService, SimilarityMeasure similarityMeasureService) {
+    ThreadPoolTaskExecutor threadPoolExecutor;
+
+    protected LatentSemanticAnalysis(MovieToNLPConverter movieToNlpConverter, DocumentStatsToArrayConverter weightStructureConverter, WordOccurrenceMatrix wordOccurrenceMatrix, WeightMeasure weightMeasureService, SimilarityMeasure similarityMeasureService, ThreadPoolTaskExecutor threadPoolExecutor) {
 
         super(movieToNlpConverter, weightStructureConverter, wordOccurrenceMatrix, weightMeasureService, similarityMeasureService);
         this.svdService = new SVD();
+        this.threadPoolExecutor = threadPoolExecutor;
     }
 
-    //todo: make async
+    @Async("algorithmsThreadPool")
     @Override
-    public Set<CompareResult> run() {
+    public CompletableFuture<Set<CompareResult>> run() {
 
         AtomicLong timer = new AtomicLong(new Date().getTime());
 
@@ -49,7 +56,7 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         // group by word => create word vectors
         Map<String, List<DocumentStats>> groupByWord = wordDocumentMatrix.stream().collect(Collectors.groupingBy(DocumentStats::getWord));
 
-        System.out.println("Step1 -- " + (new Date().getTime() - timer.get()));
+        log.info("Step1 -- " + (new Date().getTime() - timer.get()));
         timer.set(new Date().getTime());
         // perform svd
 
@@ -59,7 +66,7 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
 
         double[][] solved = svdService.solve(tfIdfArray, rank);
 
-        System.out.println("Step2 -- " + (new Date().getTime() - timer.get()));
+        log.info("Step2 -- " + (new Date().getTime() - timer.get()));
         timer.set(new Date().getTime());
 
         // convert again to get values for corresponding documents
@@ -87,9 +94,9 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
                 .map(crh -> new CompareResult(crh.getMovieId_1(), crh.getMovieId_2(), crh.getResult_lsa(), null, null))
                 .collect(Collectors.toSet());
 
-        System.out.println("Step3 -- " + (new Date().getTime() - timer.get()));
+        log.info("Step3 -- " + (new Date().getTime() - timer.get()));
 
-        return results;
+        return CompletableFuture.completedFuture(results);
     }
 
     private CompletableFuture<List<CompareResultHelper>> getCompareResultsForDocument(List<DocumentStats> documentVector1, ArrayList<List<DocumentStats>> documents, int i) {
@@ -110,6 +117,6 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
                 }
             }
             return result;
-        });
+        }, threadPoolExecutor);
     }
 }
