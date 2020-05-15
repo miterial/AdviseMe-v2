@@ -12,20 +12,32 @@ public class ThreadsConfig {
 
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
         pool.setCorePoolSize(5);
-        pool.setMaxPoolSize(50);
+        pool.setMaxPoolSize(5);
         pool.setThreadNamePrefix("Algorithm-");
         pool.setWaitForTasksToCompleteOnShutdown(false);
         pool.setAllowCoreThreadTimeOut(true);
         return pool;
     }
 
-    @Bean("innerCalculationsThreadPool")
-    public ThreadPoolTaskExecutor innerCalculationsThreadPool() {
+    @Bean("lsaCalculationsThreadPool")
+    public ThreadPoolTaskExecutor lsaCalculationsThreadPool() {
 
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
-        pool.setCorePoolSize(50);
-        pool.setMaxPoolSize(100);
-        pool.setThreadNamePrefix("Calculations-");
+        pool.setCorePoolSize(6);
+        pool.setMaxPoolSize(8);
+        pool.setThreadNamePrefix("LSA-");
+        pool.setWaitForTasksToCompleteOnShutdown(false);
+        pool.setAllowCoreThreadTimeOut(true);
+        return pool;
+    }
+
+    @Bean("mlsaCalculationsThreadPool")
+    public ThreadPoolTaskExecutor mlsaCalculationsThreadPool() {
+
+        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+        pool.setCorePoolSize(6);
+        pool.setMaxPoolSize(8);
+        pool.setThreadNamePrefix("MLSA-");
         pool.setWaitForTasksToCompleteOnShutdown(false);
         pool.setAllowCoreThreadTimeOut(true);
         return pool;

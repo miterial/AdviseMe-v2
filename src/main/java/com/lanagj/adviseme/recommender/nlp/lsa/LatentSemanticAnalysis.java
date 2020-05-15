@@ -47,8 +47,12 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
 
         Map<String, List<BagOfWords.WordFrequency>> bagOfWords = wordOccurrenceMatrix.get(stemmedWords);
 
+        stemmedWords.clear();
+
         // calculate tf-idf matrix for words-documents
         List<DocumentStats> wordDocumentMatrix = this.weightMeasureService.calculateWeight(bagOfWords);
+
+        bagOfWords.clear();
 
         // sort by docID
         wordDocumentMatrix.sort(Comparator.comparingInt(DocumentStats::getDocumentId));
@@ -70,17 +74,24 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         timer.set(new Date().getTime());
 
         // convert again to get values for corresponding documents
+        List<DocumentStats> wordVector;
         List<List<DocumentStats>> matrix = new ArrayList<>(groupByWord.values());
         for (int i = 0; i < groupByWord.size(); i++) {    // word vector
-            List<DocumentStats> wordVector = matrix.get(i);
+            wordVector = matrix.get(i);
             for (int j = 0; j < wordVector.size(); j++) {
                 wordVector.get(j).setValue(solved[i][j]);
             }
         }
 
+        groupByWord.clear();
+
         // calculate similarity matrix with cosine measure
-        Map<Integer, List<DocumentStats>> groupByDocument = wordDocumentMatrix.stream().collect(Collectors.groupingBy(DocumentStats::getDocumentId));
+        Map<Integer, List<DocumentStats>> groupByDocument = matrix.stream().flatMap(List::stream).collect(Collectors.groupingBy(DocumentStats::getDocumentId));
         ArrayList<List<DocumentStats>> documents = new ArrayList<>(groupByDocument.values());
+
+        matrix.clear();
+        wordDocumentMatrix.clear();
+        groupByDocument.clear();
 
         List<DocumentStats> documentVector1;
         List<CompletableFuture<List<CompareResultHelper>>> compareResult = new ArrayList<>();
@@ -95,6 +106,8 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
                 .collect(Collectors.toSet());
 
         log.info("Step3 -- " + (new Date().getTime() - timer.get()));
+
+        compareResult.clear();
 
         return CompletableFuture.completedFuture(results);
     }

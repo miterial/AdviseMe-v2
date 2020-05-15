@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OriginalLatentSemanticAnalysis extends LatentSemanticAnalysis {
 
-    protected OriginalLatentSemanticAnalysis(MovieToNLPConverter movieToNlpConverter, DocumentStatsToArrayConverter weightStructureConverter, WordOccurrenceMatrix wordOccurrenceMatrix, WeightMeasure weightMeasureService, CosineSimilarity similarityMeasureService, @Qualifier("innerCalculationsThreadPool") ThreadPoolTaskExecutor threadPoolExecutor) {
+    protected OriginalLatentSemanticAnalysis(MovieToNLPConverter movieToNlpConverter, DocumentStatsToArrayConverter weightStructureConverter, WordOccurrenceMatrix wordOccurrenceMatrix, WeightMeasure weightMeasureService, CosineSimilarity similarityMeasureService, @Qualifier("lsaCalculationsThreadPool") ThreadPoolTaskExecutor threadPoolExecutor) {
 
         super(movieToNlpConverter, weightStructureConverter, wordOccurrenceMatrix, weightMeasureService, similarityMeasureService, threadPoolExecutor);
     }
