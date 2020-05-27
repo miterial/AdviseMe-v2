@@ -2,6 +2,10 @@ package com.lanagj.adviseme.entity.user;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface UserRepository extends MongoRepository<User, Integer> {
+import java.util.List;
+
+public interface UserRepository extends MongoRepository<User, String> {
+
+    List<User> findByRole(Role simple);
 
 }
