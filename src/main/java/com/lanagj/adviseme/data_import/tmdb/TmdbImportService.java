@@ -9,6 +9,7 @@ import com.uwetrottmann.tmdb2.entities.MovieResultsPage;
 import com.uwetrottmann.tmdb2.enumerations.SortBy;
 import com.uwetrottmann.tmdb2.services.DiscoverService;
 import com.uwetrottmann.tmdb2.services.GenresService;
+import com.uwetrottmann.tmdb2.services.MoviesService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,6 +31,8 @@ public class TmdbImportService {
 
     DiscoverService discoverService;
     GenresService genresService;
+    MoviesService moviesService;
+
     GeneralConverterService movieConverter;
     MovieRepository movieRepository;
 
@@ -54,10 +58,7 @@ public class TmdbImportService {
 
         List<com.lanagj.adviseme.entity.movie.Movie> movieEntities = this.movieConverter.convertList(moviesBaseInfo, BaseMovie.class, com.lanagj.adviseme.entity.movie.Movie.class);
 
-        for (int i = 0; i < movieEntities.size(); i++) {
-            System.out.println((i + 1));
-            System.out.println(movieEntities.get(i).getOverview() + "\n");
-        }
+        System.out.println(movieEntities.size());
 
         this.movieRepository.saveAll(movieEntities);
     }
@@ -115,4 +116,18 @@ public class TmdbImportService {
         return pageResultsList;
     }
 
+    public List<BaseMovie> getMovies(Set<Integer> movieIds) {
+
+        List<BaseMovie> movies = new ArrayList<>();
+        for (Integer movieId : movieIds) {
+            try {
+                com.uwetrottmann.tmdb2.entities.Movie movie = this.moviesService.summary(movieId, "ru").execute().body();
+                if (movie != null)
+                    movies.add(movie);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return movies;
+    }
 }

@@ -26,14 +26,14 @@ class CosineCompareResultTest {
 
         assertEquals(3, input.size());  // 3 - number of documents
 
-        Double similarityDoc1Doc2 = this.cosineSimilarityService.findSimilarity(input.get(0), input.get(1));
-        Double similarityDoc1Doc3 = this.cosineSimilarityService.findSimilarity(input.get(0), input.get(2));
-        Double similarityDoc2Doc3 = this.cosineSimilarityService.findSimilarity(input.get(1), input.get(2));
+        Double similarityDoc1Doc2 = this.cosineSimilarityService.findSimilarity(input.get(0), input.get(1), new double[0]);
+        Double similarityDoc1Doc3 = this.cosineSimilarityService.findSimilarity(input.get(0), input.get(2), new double[0]);
+        Double similarityDoc2Doc3 = this.cosineSimilarityService.findSimilarity(input.get(1), input.get(2), new double[0]);
 
 
-        Double similarityDoc2Doc1 = this.cosineSimilarityService.findSimilarity(input.get(1), input.get(0));
-        Double similarityDoc3Doc1 = this.cosineSimilarityService.findSimilarity(input.get(2), input.get(0));
-        Double similarityDoc3Doc2 = this.cosineSimilarityService.findSimilarity(input.get(2), input.get(1));
+        Double similarityDoc2Doc1 = this.cosineSimilarityService.findSimilarity(input.get(1), input.get(0), new double[0]);
+        Double similarityDoc3Doc1 = this.cosineSimilarityService.findSimilarity(input.get(2), input.get(0), new double[0]);
+        Double similarityDoc3Doc2 = this.cosineSimilarityService.findSimilarity(input.get(2), input.get(1), new double[0]);
 
         assertTrue(similarityDoc1Doc2 < similarityDoc1Doc3);
         assertTrue(similarityDoc1Doc2 > similarityDoc2Doc3);

@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,9 +40,11 @@ public class Evaluation {
         CompletableFuture<Set<CompareResult>> lsa = this.latentSemanticAnalysis.run();
         CompletableFuture<Set<CompareResult>> mlsa = this.modifiedLatentSemanticAnalysis.run();
 
-        Map<CompareResult.CompareId, CompareResult> lsaMap = lsa.join().stream().collect(Collectors.toMap(CompareResult::getId_pair, Function.identity()));
+        Set<CompareResult> lsaJoin = lsa.join();
+        Map<CompareResult.CompareId, CompareResult> lsaMap = lsaJoin.stream().collect(Collectors.toMap(CompareResult::getId_pair, Function.identity()));
 
-        Map<CompareResult.CompareId, CompareResult> mlsaMap = mlsa.join().stream().collect(Collectors.toMap(CompareResult::getId_pair, Function.identity()));
+        Set<CompareResult> mlsaJoin = mlsa.join();
+        Map<CompareResult.CompareId, CompareResult> mlsaMap = mlsaJoin.stream().collect(Collectors.toMap(CompareResult::getId_pair, Function.identity()));
 
         System.out.println("Evaluation started -- " + (new Date().getTime() - startTime));
 
@@ -54,6 +54,25 @@ public class Evaluation {
             e.printStackTrace();
         }
     }
+/*
+
+    private Map<Integer, Set<CompareResult>> getRandomResults(ArrayList<CompareResult> lsa, ArrayList<CompareResult> mlsa) {
+
+        Map<Integer, Set<CompareResult>> compareResults = new HashMap<>();
+        compareResults.put(1, new HashSet<>());
+        compareResults.put(2, new HashSet<>());
+
+        Random random = new Random();
+        int max = lsa.size();
+        for (int i = 0; i < (Math.min(max, 30)); i++) {
+            int k = random.nextInt(max);
+            compareResults.get(1).add(lsa.get(k));
+            compareResults.get(2).add(mlsa.get(k));
+        }
+
+        return compareResults;
+    }
+*/
 
     private void exportToExcel(Map<CompareResult.CompareId, CompareResult> lsaMap,
                                Map<CompareResult.CompareId, CompareResult> mlsaMap) throws IOException {
@@ -89,9 +108,21 @@ public class Evaluation {
         valueCell = header.createCell(colNum);
         valueCell.setCellValue("MLSA-s");
 
+        List<Integer> movieIds = Arrays.asList(
+                176403, 74643, 8329, 276624
+                , 212162
+                , 255962
+                , 8386
+                , 394568
+                , 400642
+                , 11547
+        );
+
         for (CompareResult.CompareId compareId : lsaMap.keySet()) {
-            Row row = sheet.createRow(rowNum++);
-            fillTable(row, compareId, lsaMap.get(compareId), mlsaMap.get(compareId));
+            if(compareId.containsAny(movieIds)) {
+                Row row = sheet.createRow(rowNum++);
+                fillTable(row, compareId, lsaMap.get(compareId), mlsaMap.get(compareId));
+            }
         }
 
         fileLocation += "/test.xlsx";

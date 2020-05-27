@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class ModifiedCosineSimilarity implements SimilarityMeasure {
 
-    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2) {
+    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2, double[] e) {
 
         Set<String> wordsDocument1 = document1.stream().map(DocumentStats::getWord).collect(Collectors.toSet());
         Set<String> wordsDocument2 = document2.stream().map(DocumentStats::getWord).collect(Collectors.toSet());
@@ -36,30 +36,19 @@ public class ModifiedCosineSimilarity implements SimilarityMeasure {
 
         double vectorValue1;
         double vectorValue2;
-        double weight;
 
         for (int i = 0; i < valuesDocument1.size(); i++) {
             vectorValue1 = valuesDocument1.get(i);
             vectorValue2 = valuesDocument2.get(i);
-
-            if(vectorValue1 > 0 && vectorValue2 > 0) {
-                weight = 0.8;
-            } else if(vectorValue1 <= 0 && vectorValue2 <= 0) {
-                weight = 0.2;
-            } else {
-                weight = 1;
-            }
-            d1 += vectorValue1 * weight;
-            d2 += vectorValue2 * weight;
-            /*d1 += Math.pow(vectorValue1, 2);
-            d2 += Math.pow(vectorValue2, 2);*/
+            d1 += Math.pow(vectorValue1, 2);
+            d2 += Math.pow(vectorValue2, 2);
         }
         double cosineSimilarity;
         if(d1 <= 0 || d2 <= 0) {
             return 0.0;
         }
-        cosineSimilarity = dotProduct / (Math.sqrt(d1) * Math.sqrt(d2));
-        //cosineSimilarity = 0.5 * (cosineSimilarity + 1);
+        double v = Math.sqrt(d1) * Math.sqrt(d2);
+        cosineSimilarity = dotProduct / v;
         return cosineSimilarity;
     }
 
@@ -82,8 +71,11 @@ public class ModifiedCosineSimilarity implements SimilarityMeasure {
             if (aDouble1 < 0) {
                 aDouble1 = 0.0;
             }
-            double sqrt = Math.sqrt(aDouble * aDouble1);
-            dotProduct += sqrt;
+            double weight = 0.5;
+            if(aDouble > 0 && aDouble1 > 0) {
+                weight = 1.5;
+            }
+            dotProduct += aDouble * aDouble1 * weight;
         }
 
         return dotProduct;

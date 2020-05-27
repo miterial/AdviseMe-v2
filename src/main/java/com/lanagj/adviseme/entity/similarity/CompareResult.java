@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
 import java.util.Objects;
 
 @Document
@@ -35,6 +36,11 @@ public class CompareResult {
         @Override
         public String toString(){
             return movieId_1 + " " + movieId_2;
+        }
+
+        public boolean containsAny(List<Integer> movieIds) {
+
+            return movieIds.contains(movieId_1) && movieIds.contains(movieId_2);
         }
     }
 

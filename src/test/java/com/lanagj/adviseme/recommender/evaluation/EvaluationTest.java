@@ -1,18 +1,19 @@
 package com.lanagj.adviseme.recommender.evaluation;
 
 import com.lanagj.adviseme.AdviseMeApplicationTests;
+import com.lanagj.adviseme.converter.GeneralConverterService;
 import com.lanagj.adviseme.data_import.tmdb.TmdbImportService;
-import com.lanagj.adviseme.entity.movie.Movie;
+import com.lanagj.adviseme.entity.movie.MovieRepository;
 import com.lanagj.adviseme.recommender.nlp.lsa.MovieDataProvider;
+import com.uwetrottmann.tmdb2.entities.BaseMovie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class EvaluationTest extends AdviseMeApplicationTests {
 
@@ -21,9 +22,14 @@ class EvaluationTest extends AdviseMeApplicationTests {
 
     @Autowired
     TmdbImportService tmdbImportService;
+    @Autowired
+    GeneralConverterService movieConverter;
+    @Autowired
+    MovieRepository movieRepository;
 
     @BeforeEach
     void setUp() {
+
         this.mongoTemplate.insertAll(MovieDataProvider.provideArguments());
     }
 
@@ -36,8 +42,22 @@ class EvaluationTest extends AdviseMeApplicationTests {
     @Test
     void mlsaDifference() {
 
-        this.tmdbImportService.importMovies(1, 2000, 2017);
 
-        assertDoesNotThrow(() -> this.evaluation.mlsaDifference());
+        List<Integer> movieIds = Arrays.asList(
+                176403, 74643, 8329, 276624
+                , 212162
+                , 255962
+                , 8386
+                , 394568
+                , 400642
+                , 11547
+        );
+        List<BaseMovie> movies = this.tmdbImportService.getMovies(new HashSet<>(movieIds));
+        List<com.lanagj.adviseme.entity.movie.Movie> movieEntities = this.movieConverter.convertList(movies, BaseMovie.class, com.lanagj.adviseme.entity.movie.Movie.class);
+        this.movieRepository.saveAll(movieEntities);
+
+        this.tmdbImportService.importMovies(3, 2000, 2017);
+
+        this.evaluation.mlsaDifference();
     }
 }

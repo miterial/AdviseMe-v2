@@ -64,9 +64,19 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         timer.set(new Date().getTime());
         // perform svd
 
-        double[][] tfIdfArray = this.weightStructureConverter.convert(groupByWord);
+        double[][] tfIdfArray = this.weightStructureConverter.convert(groupByWord);/*
+        double[][] presenceMatrix = new double[tfIdfArray.length][tfIdfArray.length];
+        for (int i = 0; i < tfIdfArray.length; i++) {
+            for (int j = 0; j < tfIdfArray[i].length; j++) {
+                if(tfIdfArray[i][j] != 0) {
+                    presenceMatrix[i][j] = 1;
+                } else {
+                    presenceMatrix[i][j] = 0;
+                }
+            }
+        }*/
 
-        int rank = Math.min(tfIdfArray[0].length / 2, 50); // rank cannot be bigger than amount of documents
+        int rank = 55; // rank cannot be bigger than amount of documents
 
         double[][] solved = svdService.solve(tfIdfArray, rank);
 
@@ -97,7 +107,7 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         List<CompletableFuture<List<CompareResultHelper>>> compareResult = new ArrayList<>();
         for (int i = 0; i < documents.size(); i++) {
             documentVector1 = documents.get(i);
-            compareResult.add(this.getCompareResultsForDocument(documentVector1, documents, i));
+            compareResult.add(this.getCompareResultsForDocument(documentVector1, documents, i, new double[0][]));
         }
         Set<CompareResult> results = compareResult.stream()
                 .map(CompletableFuture::join)
@@ -112,7 +122,7 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         return CompletableFuture.completedFuture(results);
     }
 
-    private CompletableFuture<List<CompareResultHelper>> getCompareResultsForDocument(List<DocumentStats> documentVector1, ArrayList<List<DocumentStats>> documents, int i) {
+    private CompletableFuture<List<CompareResultHelper>> getCompareResultsForDocument(List<DocumentStats> documentVector1, ArrayList<List<DocumentStats>> documents, int i, double[][] presenceMatrix) {
 
         return CompletableFuture.supplyAsync(() -> {
             List<CompareResultHelper> result = new ArrayList<>();
@@ -120,11 +130,14 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
             Integer documentId2;
             Integer documentId1 = documentVector1.get(0).getDocumentId();
 
+            //double[] presenceVector = new double[presenceMatrix.length];
+
             for (int j = 0; j < documents.size(); j++) {
                 if (i != j) {
                     documentVector2 = documents.get(j);
                     documentId2 = documentVector2.get(0).getDocumentId();
-                    Double sim = this.similarityMeasureService.findSimilarity(documentVector1, documentVector2);
+
+                    Double sim = this.similarityMeasureService.findSimilarity(documentVector1, documentVector2, new double[0]);
 
                     result.add(new CompareResultHelper(documentId1, documentId2, sim));
                 }

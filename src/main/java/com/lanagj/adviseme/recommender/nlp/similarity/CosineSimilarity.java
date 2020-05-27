@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class CosineSimilarity implements SimilarityMeasure {
 
-    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2) {
+    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2, double[] presenceMatrix) {
 
         Set<String> wordsDocument1 = document1.stream().map(DocumentStats::getWord).collect(Collectors.toSet());
         Set<String> wordsDocument2 = document2.stream().map(DocumentStats::getWord).collect(Collectors.toSet());

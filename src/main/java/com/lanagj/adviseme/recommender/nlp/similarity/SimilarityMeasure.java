@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface SimilarityMeasure {
 
-    Double findSimilarity(List<DocumentStats> documentVector1, List<DocumentStats> documentVector2);
+    Double findSimilarity(List<DocumentStats> documentVector1, List<DocumentStats> documentVector2, double[] presenceMatrix);
 }
