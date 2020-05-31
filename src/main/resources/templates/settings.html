@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="partials/header :: header"/>
+<body>
+<nav th:replace="partials/header :: navigation"/>
+
+<main class="my-5">
+    <div class="container">
+        <div class="card mb-3">
+            <div class="card-header">Настройки</div>
+            <div class="card-body">
+                <fieldset class="form-group">
+                    <legend class="col-form-label">Алгоритм, используемый рекомендательной системой:</legend>
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gridRadios" id="lsa_radio" value="LSA" th:checked="${#strings.equals(algType, 'LSA')}" onclick="handleClick(this);">
+                                <label class="form-check-label" for="lsa_radio">
+                                    LSA
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gridRadios" id="mlsa_radio" value="MLSA"  th:checked="${#strings.equals(algType, 'MLSA')}"  onclick="handleClick(this);">
+                                <label class="form-check-label" for="mlsa_radio">
+                                    MLSA
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+
+<footer th:replace="partials/footer :: footer"></footer>
+
+<script>
+    function handleClick(radio) {
+
+        var data = {"type":radio.value}
+        $.ajax({
+            url: '/admin',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success:function (response) {
+                alert("updated algorithm")
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("could not update algorithm")
+            }
+        });
+    }
+</script>
+
+</html>
