@@ -9,11 +9,9 @@ import com.lanagj.adviseme.entity.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -21,6 +19,13 @@ public class MovieService {
 
     UserRepository userRepository;
     MovieRepository movieRepository;
+
+    public List<Movie> getMovies(Set<String> movieIds) {
+
+        List<Movie> results = new ArrayList<>();
+        this.movieRepository.findAllById(movieIds).forEach(results::add);
+        return results;
+    }
 
     public List<UserMovieDtoOut> getUserMovies(String userId) {
 
@@ -40,6 +45,7 @@ public class MovieService {
     private List<UserMovieDtoOut> convertToDto(List<UserMovie> userMovies, Map<String, Movie> movieEntities) {
 
         List<UserMovieDtoOut> result = new ArrayList<>();
+        NumberFormat nf = NumberFormat.getInstance();
         for (UserMovie userMovie : userMovies) {
             Movie movie = movieEntities.get(userMovie.getId());
             if(movie == null) {
@@ -47,11 +53,13 @@ public class MovieService {
             }
 
             LocalDate localDate = LocalDate.ofEpochDay(userMovie.getDate());
+            nf.setMaximumFractionDigits(1);
+            String formattedAvgRating = nf.format(movie.getVoteAverage().doubleValue());
             result.add(new UserMovieDtoOut(
                     movie.getId(),
                     movie.getTitle(),
                     movie.getOverview(),
-                    movie.getVoteAverage().doubleValue(),
+                    formattedAvgRating,
                     userMovie.getRating(),
                     localDate));
 

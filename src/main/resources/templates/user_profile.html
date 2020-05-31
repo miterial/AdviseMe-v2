@@ -6,6 +6,7 @@
 
 <main class="my-5">
     <div class="container">
+        <h2 th:inline="text">Здравствуйте, [[${username}]]!</h2>
         <div class="card mb-3">
             <div class="card-header">Ваши фильмы</div>
             <div class="card-body">
@@ -74,6 +75,7 @@
                     {
                         "data": "added_date",
                         "render": function (data, type, row) {
+                            //todo: trim to days
                             return new Date(data).toLocaleString();
                         },
                         "searchable": false

@@ -4,6 +4,7 @@ import com.lanagj.adviseme.configuration.security.UserPrincipal;
 import com.lanagj.adviseme.controller.movie.MovieService;
 import com.lanagj.adviseme.controller.movie.UserMovieDtoOut;
 import com.lanagj.adviseme.controller.user.dto.UserMovieDtoIn;
+import com.lanagj.adviseme.entity.movie_list.MovieType;
 import com.lanagj.adviseme.entity.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
@@ -23,16 +24,30 @@ public class UserController {
 
     @GetMapping
     public ModelAndView getUserProfile(ModelAndView model, @AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        User user = this.userService.getUser(userPrincipal.getId());
-        model.addObject("user", user);
-
-        List<UserMovieDtoOut> movies = this.movieService.getUserMovies(user.getId());
-        model.addObject("movies", movies);
-
+        model.addObject("username", userPrincipal.getUsername());
         model.setViewName("user_profile");
-
         return model;
+    }
+
+    @GetMapping("/liked")
+    public List<UserMovieDtoOut> getLikedMovies(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        List<UserMovieDtoOut> movies = this.userService.getMovies(MovieType.LIKED, userPrincipal.getId());
+        return movies;
+    }
+
+    @GetMapping("/disliked")
+    public List<UserMovieDtoOut> getDislikedMovies(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        List<UserMovieDtoOut> movies = this.userService.getMovies(MovieType.DISLIKED, userPrincipal.getId());
+        return movies;
+    }
+
+    @GetMapping("/recommended")
+    public List<UserMovieDtoOut> getRecommendedMovies(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        List<UserMovieDtoOut> movies = this.userService.getMovies(MovieType.RECOMMENDED, userPrincipal.getId());
+        return movies;
     }
 
     @PostMapping

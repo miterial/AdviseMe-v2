@@ -16,4 +16,7 @@ public class UserMovie extends Entity {
     Double rating;
     /** Date when the movie was marked as seen */
     Long date;
+    /** Defines whether user has already seen this movie
+     * or it can be recommended to user */
+    MovieType type;
 }

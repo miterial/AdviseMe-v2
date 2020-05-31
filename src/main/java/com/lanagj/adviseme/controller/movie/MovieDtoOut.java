@@ -9,12 +9,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MovieDtoOut {
+public abstract class MovieDtoOut {
 
     String movie_id;
     String movie_title;
     String movie_overview;
-    Double avg_rating;
+    String avg_rating;
 
     //todo: 2-3 new fields with recommender ratings (lsa, mlsa, esa)
 }
