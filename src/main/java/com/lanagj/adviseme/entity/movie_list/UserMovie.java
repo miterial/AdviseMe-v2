@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UserMovie extends Entity {
 
     /** ID of the movie that was marked by user as seen */
-    Integer movieId;
+    String movieId;
     /** User rating for this movie */
     Double rating;
     /** Date when the movie was marked as seen */

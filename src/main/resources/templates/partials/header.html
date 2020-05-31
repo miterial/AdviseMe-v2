@@ -1,23 +1,24 @@
 <head th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
-    <title>Tumblr Poster</title>
+    <title>AdviseMe</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="content-language" content="ru">
-    <link rel="stylesheet" th:href="@{static/css/lib/datatables.min.css}">
+    <link rel="stylesheet" th:href="@{css/lib/datatables.min.css}">
 </head>
 
 <nav class="navbar navbar-expand navbar-dark bg-dark" th:fragment="navigation" >
     <div class="container">
-        <a class="navbar-brand" href="/">TumblrPoster</a>
+        <a class="navbar-brand" href="/">AdviseMe</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarsExample02">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="/user">Аккаунт</a></li>
-                <li class="nav-item"><a class="nav-link" href="/movies">Все фильмы</a></li>
+                <li class="nav-item"><a class="nav-link" href="/users">Аккаунт</a></li>
+                <li class="nav-item"><a class="nav-link" href="/">Все фильмы</a></li>
+                <li class="nav-item"><a class="nav-link" href="/login?logout">Выйти</a></li>
                 <li class="nav-item"><a class="nav-link" href="/admin">Панель администратора</a></li>
             </ul>
         </div>

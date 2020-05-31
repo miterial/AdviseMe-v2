@@ -1,27 +1,34 @@
 package com.lanagj.adviseme.controller.user;
 
+import com.lanagj.adviseme.configuration.security.UserPrincipal;
+import com.lanagj.adviseme.controller.movie.MovieService;
+import com.lanagj.adviseme.controller.movie.UserMovieDtoOut;
 import com.lanagj.adviseme.controller.user.dto.UserMovieDtoIn;
 import com.lanagj.adviseme.entity.user.User;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
+
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
 
     UserService userService;
+    MovieService movieService;
 
     @GetMapping
-    public ModelAndView getUserProfile(ModelAndView model) {
+    public ModelAndView getUserProfile(ModelAndView model, @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        User simpleUser = this.userService.getSimpleUser();
-        model.addObject("user", simpleUser);
+        User user = this.userService.getUser(userPrincipal.getId());
+        model.addObject("user", user);
+
+        List<UserMovieDtoOut> movies = this.movieService.getUserMovies(user.getId());
+        model.addObject("movies", movies);
 
         model.setViewName("user_profile");
 

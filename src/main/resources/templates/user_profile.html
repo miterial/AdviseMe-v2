@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="partials/header :: header"/>
+<body>
+<nav th:replace="partials/header :: navigation"/>
+
+<main class="my-5">
+    <div class="container">
+        <div class="card mb-3">
+            <div class="card-header">Ваши фильмы</div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="user_movies_tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="liked-tab" data-toggle="tab" href="#liked" role="tab"
+                           aria-controls="liked" aria-selected="true">Понравились</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="disliked-tab" data-toggle="tab" href="#disliked" role="tab"
+                           aria-controls="disliked" aria-selected="false">Не понравились</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="recommended-tab" data-toggle="tab" href="#recommended" role="tab"
+                           aria-controls="recommended" aria-selected="false">Рекомендации</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="liked" role="tabpanel" aria-labelledby="liked-tab">
+                        <table id="movie_table_liked" class="table table-bordered">
+                            <thead th:replace="partials/movie_table :: user"/>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="disliked" role="tabpanel" aria-labelledby="disliked-tab">
+                        <table id="movie_table_disliked" class="table table-bordered">
+                            <thead th:replace="partials/movie_table :: user"/>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="recommended" role="tabpanel" aria-labelledby="recommended-tab">
+                        <table id="movie_table_recommended" class="table table-bordered">
+                            <thead th:replace="partials/movie_table :: recommendation"/>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+
+<footer th:replace="partials/footer :: footer"></footer>
+
+<script>
+
+    /** USER MOVIES */
+
+    $(document).ready(function () {
+
+        $('#movie_table_recommended').DataTable(recommendedMovies("/users/recommended"));
+
+        $('#movie_table_liked').DataTable(userMovies("/users/liked"));
+        $('#movie_table_disliked').DataTable(userMovies("/users/disliked"));
+
+        function recommendedMovies() {
+            return {
+                "ajax": {
+                    "url": "/users/recommended",
+                    "type": "GET",
+                    "dataSrc": ""
+                },
+                "columns": [
+                    {"data": "movie_title"},
+                    {"data": "movie_overview"},
+                    {"data": "avg_rating"},
+                    {
+                        "data": "added_date",
+                        "render": function (data, type, row) {
+                            return new Date(data).toLocaleString();
+                        },
+                        "searchable": false
+                    }
+                ],
+                "infoCallback": function (settings, start, end, max, total, pre) {
+                    return 'Всего: ' + total;
+                },
+                "createdRow": function (row, data, indice) {
+                    $(row).attr('data-id', data.movie_id);
+                }
+            }
+        }
+
+        function userMovies(url) {
+            return {
+                "ajax": {
+                    "url": url,
+                    "type": "GET",
+                    "dataSrc": ""
+                },
+                "columns": [
+                    {"data": "movie_title"},
+                    {"data": "movie_overview"},
+                    {"data": "avg_rating"},
+                    {"data": "user_rating"},
+                    {
+                        "data": "user_rating_date",
+                        "render": function (data, type, row) {
+                            return new Date(data).toLocaleString();
+                        },
+                        "searchable": false
+                    }
+                ],
+                "infoCallback": function (settings, start, end, max, total, pre) {
+                    return 'Всего: ' + total;
+                },
+                "createdRow": function (row, data, indice) {
+                    $(row).attr('data-id', data.movie_id);
+                }
+            }
+        }
+    });
+
+</script>
+
+
+<script th:src="@{static/js/scripts.js}"></script>
+
+</html>

@@ -1,6 +1,6 @@
 package com.lanagj.adviseme.controller.movie;
 
-import com.lanagj.adviseme.controller.user.EntityNotFoundException;
+import com.lanagj.adviseme.controller.exception.EntityNotFoundException;
 import com.lanagj.adviseme.entity.movie.Movie;
 import com.lanagj.adviseme.entity.movie.MovieRepository;
 import com.lanagj.adviseme.entity.movie_list.UserMovie;
@@ -51,6 +51,7 @@ public class MovieService {
                     movie.getId(),
                     movie.getTitle(),
                     movie.getOverview(),
+                    movie.getVoteAverage().doubleValue(),
                     userMovie.getRating(),
                     localDate));
 
