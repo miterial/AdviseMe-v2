@@ -1,6 +1,6 @@
 package com.lanagj.adviseme.entity.user;
 
 public enum Role {
-    SIMPLE,
-    ADMIN
+    ROLE_SIMPLE,
+    ROLE_ADMIN
 }

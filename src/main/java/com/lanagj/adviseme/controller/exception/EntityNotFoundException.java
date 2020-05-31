@@ -1,4 +1,4 @@
-package com.lanagj.adviseme.controller.user;
+package com.lanagj.adviseme.controller.exception;
 
 public class EntityNotFoundException extends RuntimeException {
 
