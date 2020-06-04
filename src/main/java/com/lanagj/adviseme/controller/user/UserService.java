@@ -4,12 +4,11 @@ import com.lanagj.adviseme.controller.exception.EntityNotFoundException;
 import com.lanagj.adviseme.controller.movie.MovieService;
 import com.lanagj.adviseme.controller.movie.UserMovieDtoOut;
 import com.lanagj.adviseme.entity.movie.Movie;
-import com.lanagj.adviseme.entity.movie_list.MovieType;
+import com.lanagj.adviseme.entity.movie_list.UserMovieType;
 import com.lanagj.adviseme.entity.movie_list.UserMovie;
 import com.lanagj.adviseme.entity.movie_list.UserMovieRepository;
 import com.lanagj.adviseme.entity.user.User;
 import com.lanagj.adviseme.entity.user.UserRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -46,11 +45,11 @@ public class UserService {
 
     void addMovieRating(String userId, String movieId, Double rating) {
 
-        MovieType type;
+        UserMovieType type;
         if(rating > ratingLimit) {
-            type = MovieType.LIKED;
+            type = UserMovieType.LIKED;
         } else {
-            type = MovieType.DISLIKED;
+            type = UserMovieType.DISLIKED;
         }
 
         UserMovie userMovie = new UserMovie(movieId, rating, Instant.now().toEpochMilli(), type);
@@ -61,7 +60,7 @@ public class UserService {
         this.userRepository.save(user);
     }
 
-    List<UserMovieDtoOut> getMovies(MovieType userMovieType, String userId) {
+    List<UserMovieDtoOut> getMovies(UserMovieType userMovieType, String userId) {
 
         User user = this.userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User"));
 
