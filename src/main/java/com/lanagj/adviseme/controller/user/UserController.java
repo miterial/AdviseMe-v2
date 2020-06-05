@@ -4,7 +4,7 @@ import com.lanagj.adviseme.configuration.security.UserPrincipal;
 import com.lanagj.adviseme.controller.movie.MovieService;
 import com.lanagj.adviseme.controller.movie.UserMovieDtoOut;
 import com.lanagj.adviseme.controller.user.dto.UserMovieDtoIn;
-import com.lanagj.adviseme.entity.movie_list.UserMovieType;
+import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,21 +30,21 @@ public class UserController {
     @GetMapping("/liked")
     public List<UserMovieDtoOut> getLikedMovies(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        List<UserMovieDtoOut> movies = this.userService.getMovies(UserMovieType.LIKED, userPrincipal.getId());
+        List<UserMovieDtoOut> movies = this.userService.getMovies(UserMovieStatus.LIKED, userPrincipal.getId());
         return movies;
     }
 
     @GetMapping("/disliked")
     public List<UserMovieDtoOut> getDislikedMovies(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        List<UserMovieDtoOut> movies = this.userService.getMovies(UserMovieType.DISLIKED, userPrincipal.getId());
+        List<UserMovieDtoOut> movies = this.userService.getMovies(UserMovieStatus.DISLIKED, userPrincipal.getId());
         return movies;
     }
 
     @GetMapping("/recommended")
     public List<UserMovieDtoOut> getRecommendedMovies(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        List<UserMovieDtoOut> movies = this.userService.getMovies(UserMovieType.RECOMMENDED, userPrincipal.getId());
+        List<UserMovieDtoOut> movies = this.userService.getMovies(UserMovieStatus.RECOMMENDED, userPrincipal.getId());
         return movies;
     }
 

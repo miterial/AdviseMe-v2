@@ -2,17 +2,15 @@ package com.lanagj.adviseme.entity.movie_list;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document
 @Getter
 @ToString(callSuper = true)
-public class EvaluationUserMovie extends UserMovie {
+public class EvaluationUserMovie extends TestUserMovie {
 
-    Integer userId;
+    public EvaluationUserMovie(Integer userId, String movieId, UserMovieStatus type) {
 
-    public EvaluationUserMovie(Integer userId, String movieId, Double rating, Long date) {
-
-        super(movieId, rating, date, null);
-        this.userId = userId;
-        super.type = rating > 3.0 ? UserMovieType.LIKED : UserMovieType.DISLIKED;
+        super(userId, movieId, type);
     }
 }

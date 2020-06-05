@@ -4,7 +4,7 @@ import com.lanagj.adviseme.controller.exception.EntityNotFoundException;
 import com.lanagj.adviseme.controller.movie.MovieService;
 import com.lanagj.adviseme.controller.movie.UserMovieDtoOut;
 import com.lanagj.adviseme.entity.movie.Movie;
-import com.lanagj.adviseme.entity.movie_list.UserMovieType;
+import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
 import com.lanagj.adviseme.entity.movie_list.UserMovie;
 import com.lanagj.adviseme.entity.movie_list.UserMovieRepository;
 import com.lanagj.adviseme.entity.user.User;
@@ -45,14 +45,14 @@ public class UserService {
 
     void addMovieRating(String userId, String movieId, Double rating) {
 
-        UserMovieType type;
+        UserMovieStatus type;
         if(rating > ratingLimit) {
-            type = UserMovieType.LIKED;
+            type = UserMovieStatus.LIKED;
         } else {
-            type = UserMovieType.DISLIKED;
+            type = UserMovieStatus.DISLIKED;
         }
 
-        UserMovie userMovie = new UserMovie(movieId, rating, Instant.now().toEpochMilli(), type);
+        UserMovie userMovie = new UserMovie(movieId, type, rating, Instant.now().toEpochMilli());
         this.userMovieRepository.save(userMovie);
 
         User user = this.userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User"));
@@ -60,11 +60,11 @@ public class UserService {
         this.userRepository.save(user);
     }
 
-    List<UserMovieDtoOut> getMovies(UserMovieType userMovieType, String userId) {
+    List<UserMovieDtoOut> getMovies(UserMovieStatus userMovieStatus, String userId) {
 
         User user = this.userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User"));
 
-        Map<String, UserMovie> userMovies = user.getMovies().stream().filter(m -> m.getType() == userMovieType).collect(Collectors.toMap(UserMovie::getMovieId, Function.identity()));
+        Map<String, UserMovie> userMovies = user.getMovies().stream().filter(m -> m.getType() == userMovieStatus).collect(Collectors.toMap(UserMovie::getMovieId, Function.identity()));
 
         List<Movie> movies = this.movieService.getMovies(userMovies.keySet());
 

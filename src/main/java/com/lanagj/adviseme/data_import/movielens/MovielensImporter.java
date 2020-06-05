@@ -2,6 +2,7 @@ package com.lanagj.adviseme.data_import.movielens;
 
 import com.lanagj.adviseme.entity.movie_list.EvaluationUserMovie;
 import com.lanagj.adviseme.entity.movie_list.EvaluationUserMovieRepository;
+import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.springframework.stereotype.Service;
@@ -47,14 +48,13 @@ public class MovielensImporter {
 
                 Integer userId = Integer.parseInt(lineItems[0]);
                 Integer movielensMovieId = Integer.parseInt(lineItems[1]);
-                Double rating = Double.parseDouble(lineItems[2]);
-                long date = Long.parseLong(lineItems[3]);
+                double rating = Double.parseDouble(lineItems[2]);
+                UserMovieStatus status = rating > 3.0 ? UserMovieStatus.LIKED : UserMovieStatus.DISLIKED;
 
                 this.repository.save(new EvaluationUserMovie(
                         userId,
                         movielensTmdbId.get(movielensMovieId).toString(),
-                        rating,
-                        date * 1000));
+                        status));
 
                 i++;
             }
