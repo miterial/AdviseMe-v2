@@ -14,10 +14,22 @@ public class UserMovie extends AbstractUserMovie {
     /** Date when the movie was marked as seen */
     Long date;
 
-    public UserMovie(String movieId, UserMovieStatus type, Double rating, Long date) {
+    public UserMovie(String userId, String movieId, UserMovieStatus type, Double rating, Long date) {
 
-        super(movieId, type);
+        super(userId, movieId, type);
         this.rating = rating;
         this.date = date;
+    }
+
+    @Override
+    public String getMovieId() {
+
+        return (String)super.getMovieId();
+    }
+
+    @Override
+    public String getUserId() {
+
+        return (String)super.getUserId();
     }
 }

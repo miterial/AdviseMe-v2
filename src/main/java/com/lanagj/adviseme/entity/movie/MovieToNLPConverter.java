@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @AllArgsConstructor
@@ -24,14 +25,28 @@ public class MovieToNLPConverter {
      * @return map of document IDs and preprocessed words that this document contains;
      *         lists of words can contain duplicates; this will be used to calculate word frequency
      */
-    public Map<Long, List<String>> transform() {
+    public Map<Integer, List<String>> transform() {
 
-        Map<Long, List<String>> result = new HashMap<>();
+        Map<Integer, List<String>> result = new HashMap<>();
 
         List<Movie> movies = movieRepository.findAll();
         for (Movie movie : movies) {
             List<String> words = this.porterStemmingService.process(movie.getOverview());
-            result.put(Long.valueOf(movie.getTmdbId()), words);
+            result.put(movie.getTmdbId(), words);
+        }
+
+        return result;
+
+    }
+
+    public Map<Integer, List<String>> transform(Set<Integer> tmdbIds) {
+
+        Map<Integer, List<String>> result = new HashMap<>();
+
+        List<Movie> movies = movieRepository.findAllByTmdbIdIn(tmdbIds);
+        for (Movie movie : movies) {
+            List<String> words = this.porterStemmingService.process(movie.getOverview());
+            result.put(movie.getTmdbId(), words);
         }
 
         return result;

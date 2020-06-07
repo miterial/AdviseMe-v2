@@ -1,6 +1,7 @@
 package com.lanagj.adviseme.recommender.nlp.lsa;
 
 import com.lanagj.adviseme.AdviseMeApplicationTests;
+import com.lanagj.adviseme.configuration.AlgorithmType;
 import com.lanagj.adviseme.entity.movie.Movie;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
 import org.junit.jupiter.api.AfterEach;
@@ -34,6 +35,11 @@ class LatentSemanticAnalysisTest extends AdviseMeApplicationTests {
         Set<CompareResult> results = this.service.run().join();
 
         assertEquals(3, results.size());
+
+        for (CompareResult result : results) {
+            assertNotNull(result.getResults().get(AlgorithmType.LSA));
+            assertNotNull(result.getResults().get(AlgorithmType.MLSA));
+        }
 
     }
 }

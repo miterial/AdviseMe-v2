@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 @Service
 public class BagOfWords implements WordOccurrenceMatrix<BagOfWords.WordFrequency> {
 
-    public Map<String, List<WordFrequency>> get(Map<Long, List<String>> documentWordsMap) {
+    public Map<String, List<WordFrequency>> get(Map<Integer, List<String>> documentWordsMap) {
 
         Map<String, List<WordFrequency>> result = new HashMap<>();
 
         Set<String> allWordsInAllDocuments = documentWordsMap.values().stream().flatMap(List::stream).collect(Collectors.toSet());
 
         // calculate frequency of words in each document
-        for (Map.Entry<Long, List<String>> entry : documentWordsMap.entrySet()) {
+        for (Map.Entry<Integer, List<String>> entry : documentWordsMap.entrySet()) {
 
             // how many times each word is found in this document
             Map<String, Long> collect = entry.getValue().stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
@@ -44,16 +44,16 @@ public class BagOfWords implements WordOccurrenceMatrix<BagOfWords.WordFrequency
     @ToString
     public static class WordFrequency {
 
-        Long documentId;
+        Integer documentId;
         Long numOfOccurrences;
 
-        public WordFrequency(Long documentId, Long numOfOccurrences) {
+        public WordFrequency(Integer documentId, Long numOfOccurrences) {
 
             this.documentId = documentId;
             this.numOfOccurrences = numOfOccurrences;
         }
 
-        public Long getDocumentId() {
+        public Integer getDocumentId() {
 
             return documentId;
         }

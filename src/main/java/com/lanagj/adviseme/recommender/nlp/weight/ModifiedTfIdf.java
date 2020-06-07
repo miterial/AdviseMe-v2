@@ -23,7 +23,7 @@ public class ModifiedTfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
         // key - word, value - number of documents with this word todo: create converters
         Map<String, Integer> documentsWithWordCount = this.countDocumentsByWord(bagOfWords);
         // key docID, value - amount of words in this document
-        Map<Long, Integer> wordsInDocumentCount = this.countWordsInDocuments(bagOfWords);
+        Map<Integer, Integer> wordsInDocumentCount = this.countWordsInDocuments(bagOfWords);
 
         int documentsCount = wordsInDocumentCount.size();
 
@@ -52,9 +52,9 @@ public class ModifiedTfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
 
     }
 
-    private Map<Long, Integer> countWordsInDocuments(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
+    private Map<Integer, Integer> countWordsInDocuments(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
 
-        Map<Long, Set<String>> wordsInDocuments = new HashMap<>();
+        Map<Integer, Set<String>> wordsInDocuments = new HashMap<>();
 
         for (Map.Entry<String, List<BagOfWords.WordFrequency>> entry : bagOfWords.entrySet()) {
             for (BagOfWords.WordFrequency wordFrequency : entry.getValue()) {
@@ -71,7 +71,7 @@ public class ModifiedTfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
             }
         }
 
-        Map<Long, Integer> result = new HashMap<>();
+        Map<Integer, Integer> result = new HashMap<>();
 
         wordsInDocuments.forEach((key, value) -> result.put(key, value.size()));
 
@@ -80,7 +80,7 @@ public class ModifiedTfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
 
     private Map<String, Integer> countDocumentsByWord(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
 
-        Map<String, Set<Long>> wordsInDocuments = new HashMap<>();
+        Map<String, Set<Integer>> wordsInDocuments = new HashMap<>();
 
         for (Map.Entry<String, List<BagOfWords.WordFrequency>> entry : bagOfWords.entrySet()) {
             for (BagOfWords.WordFrequency wordFrequency : entry.getValue()) {

@@ -24,7 +24,7 @@ public class ExplicitSemanticAnalysis extends NaturalRanguageProcessing {
     public ExplicitSemanticAnalysis(MovieToNLPConverter movieToNLPConverter, DocumentStatsToArrayConverter tfIdfStructureConverter, WikipediaDataprovider wikipediaDataProvider) {
 
         super(movieToNLPConverter, tfIdfStructureConverter,
-                new BagOfWords(), new TfIdf(), new CosineSimilarity());
+                new BagOfWords(), new TfIdf());
         this.wikipediaDataProvider = wikipediaDataProvider;
     }
 

@@ -9,7 +9,7 @@ import java.util.*;
 public class TfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
 
     /**
-     * @param bagOfWords representation of the test collection where key - document ID, value - calculated bagOfWords
+     * @param bagOfWords representation of the test collection where key - word, value - amount of entries in each document for this word
      * @return set of rows of the word-document matrix
      */
     public List<MatrixCell> calculateWeight(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
@@ -25,7 +25,7 @@ public class TfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
         // key - word, value - number of documents with this word todo: create converters
         Map<String, Integer> documentsWithWordCount = this.countDocumentsByWord(bagOfWords);
         // key docID, value - amount of words in this document
-        Map<Long, Integer> wordsInDocumentCount = this.countWordsInDocuments(bagOfWords);
+        Map<Integer, Integer> wordsInDocumentCount = this.countWordsInDocuments(bagOfWords);
 
         int documentsCount = wordsInDocumentCount.size();
 
@@ -34,9 +34,12 @@ public class TfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
 
             // for each document that contains this word
             for (BagOfWords.WordFrequency wordFrequency : documentEntry.getValue()) {
-                tf = (double) wordFrequency.getNumOfOccurrences() / (double)wordsInDocumentCount.get(wordFrequency.getDocumentId()); //todo why +1?
+                Long qqq = wordFrequency.getNumOfOccurrences();
+                Integer documentId = wordFrequency.getDocumentId();
+                Integer www = wordsInDocumentCount.get(documentId);
+                tf = (double) qqq / (double) www; //todo why +1?
                 idf = Math.log((double) documentsCount / (double)documentsWithWordCount.get(documentEntry.getKey()));
-                documentStats = new DocumentStats(documentEntry.getKey(), Math.toIntExact(wordFrequency.getDocumentId()), tf * idf);
+                documentStats = new DocumentStats(documentEntry.getKey(), Math.toIntExact(documentId), tf * idf);
                 result.add(documentStats);
             }
 
@@ -46,47 +49,34 @@ public class TfIdf implements WeightMeasure<BagOfWords.WordFrequency> {
 
     }
 
-    private Map<Long, Integer> countWordsInDocuments(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
+    private Map<Integer, Integer> countWordsInDocuments(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
 
-        Map<Long, Set<String>> wordsInDocuments = new HashMap<>();
+        Map<Integer, Integer> result = new HashMap<>();
 
         for (Map.Entry<String, List<BagOfWords.WordFrequency>> entry : bagOfWords.entrySet()) {
             for (BagOfWords.WordFrequency wordFrequency : entry.getValue()) {
                 if (wordFrequency.getNumOfOccurrences() != 0) {
-                    wordsInDocuments.compute(wordFrequency.getDocumentId(),
-                            (key, value) -> {
-                                if (value == null) {
-                                    value = new HashSet<>();
-                                }
-                                value.add(entry.getKey());
-                                return value;
-                            });
+                    Integer documentId = wordFrequency.getDocumentId();
+                    result.putIfAbsent(documentId, 0);
+                    Integer currentWordCount = result.get(documentId);
+                    currentWordCount += wordFrequency.getNumOfOccurrences().intValue();
+                    result.put(documentId, currentWordCount);
                 }
             }
         }
-
-        Map<Long, Integer> result = new HashMap<>();
-
-        wordsInDocuments.forEach((key, value) -> result.put(key, value.size()));
 
         return result;
     }
 
     private Map<String, Integer> countDocumentsByWord(Map<String, List<BagOfWords.WordFrequency>> bagOfWords) {
 
-        Map<String, Set<Long>> wordsInDocuments = new HashMap<>();
+        Map<String, Set<Integer>> wordsInDocuments = new HashMap<>();
 
         for (Map.Entry<String, List<BagOfWords.WordFrequency>> entry : bagOfWords.entrySet()) {
+            wordsInDocuments.putIfAbsent(entry.getKey(), new HashSet<>());
             for (BagOfWords.WordFrequency wordFrequency : entry.getValue()) {
                 if (wordFrequency.getNumOfOccurrences() != 0) {
-                    wordsInDocuments.compute(entry.getKey(),
-                            (key, value) -> {
-                                if (value == null) {
-                                    value = new HashSet<>();
-                                }
-                                value.add(wordFrequency.getDocumentId());
-                                return value;
-                            });
+                    wordsInDocuments.get(entry.getKey()).add(wordFrequency.getDocumentId());
                 }
             }
         }

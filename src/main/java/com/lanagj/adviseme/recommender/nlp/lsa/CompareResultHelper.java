@@ -10,4 +10,5 @@ public class CompareResultHelper {
     private final Integer movieId_1;
     private final Integer movieId_2;
     private final Double result_lsa;
+    private final Double result_mlsa;
 }

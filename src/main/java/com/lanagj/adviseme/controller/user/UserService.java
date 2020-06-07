@@ -52,7 +52,7 @@ public class UserService {
             type = UserMovieStatus.DISLIKED;
         }
 
-        UserMovie userMovie = new UserMovie(movieId, type, rating, Instant.now().toEpochMilli());
+        UserMovie userMovie = new UserMovie(userId, movieId, type, rating, Instant.now().toEpochMilli());
         this.userMovieRepository.save(userMovie);
 
         User user = this.userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User"));
@@ -64,7 +64,7 @@ public class UserService {
 
         User user = this.userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User"));
 
-        Map<String, UserMovie> userMovies = user.getMovies().stream().filter(m -> m.getType() == userMovieStatus).collect(Collectors.toMap(UserMovie::getMovieId, Function.identity()));
+        Map<String, UserMovie> userMovies = user.getMovies().stream().filter(m -> m.getStatus() == userMovieStatus).collect(Collectors.toMap(UserMovie::getMovieId, Function.identity()));
 
         List<Movie> movies = this.movieService.getMovies(userMovies.keySet());
 

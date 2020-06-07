@@ -1,10 +1,13 @@
 package com.lanagj.adviseme.recommender.nlp.lsa;
 
+import com.lanagj.adviseme.configuration.AlgorithmType;
 import com.lanagj.adviseme.entity.movie.MovieToNLPConverter;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
+import com.lanagj.adviseme.entity.similarity.CompareResultRepository;
 import com.lanagj.adviseme.recommender.nlp.NaturalRanguageProcessing;
 import com.lanagj.adviseme.recommender.nlp.lsa.svd.SVD;
-import com.lanagj.adviseme.recommender.nlp.similarity.SimilarityMeasure;
+import com.lanagj.adviseme.recommender.nlp.similarity.CosineSimilarity;
+import com.lanagj.adviseme.recommender.nlp.similarity.ModifiedCosineSimilarity;
 import com.lanagj.adviseme.recommender.nlp.weight.DocumentStats;
 import com.lanagj.adviseme.recommender.nlp.weight.DocumentStatsToArrayConverter;
 import com.lanagj.adviseme.recommender.nlp.weight.WeightMeasure;
@@ -13,8 +16,10 @@ import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.WordOccur
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -22,28 +27,51 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
+@Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class LatentSemanticAnalysis extends NaturalRanguageProcessing {
 
     SVD svdService;
 
     ThreadPoolTaskExecutor threadPoolExecutor;
 
-    protected LatentSemanticAnalysis(MovieToNLPConverter movieToNlpConverter, DocumentStatsToArrayConverter weightStructureConverter, WordOccurrenceMatrix wordOccurrenceMatrix, WeightMeasure weightMeasureService, SimilarityMeasure similarityMeasureService, ThreadPoolTaskExecutor threadPoolExecutor) {
+    Map<Integer, List<String>> stemmedWords;
 
-        super(movieToNlpConverter, weightStructureConverter, wordOccurrenceMatrix, weightMeasureService, similarityMeasureService);
-        this.svdService = new SVD();
+    private final CosineSimilarity cosineSimilarity;
+    private final ModifiedCosineSimilarity modifiedCosineSimilarity;
+    CompareResultRepository compareResultRepository;
+
+    protected LatentSemanticAnalysis(MovieToNLPConverter movieToNlpConverter, DocumentStatsToArrayConverter weightStructureConverter, BagOfWords wordOccurrenceMatrix, WeightMeasure weightMeasureService, @Qualifier("lsaCalculationsThreadPool") ThreadPoolTaskExecutor threadPoolExecutor, CosineSimilarity cosineSimilarity, ModifiedCosineSimilarity modifiedCosineSimilarity, CompareResultRepository compareResultRepository) {
+
+        super(movieToNlpConverter, weightStructureConverter, wordOccurrenceMatrix, weightMeasureService);
         this.threadPoolExecutor = threadPoolExecutor;
+        this.cosineSimilarity = cosineSimilarity;
+        this.modifiedCosineSimilarity = modifiedCosineSimilarity;
+        this.compareResultRepository = compareResultRepository;
+        this.svdService = new SVD();
+    }
+
+    public void init(Set<Integer> tmdbIds) {
+        if(this.compareResultRepository.count() == 0L) {
+            // get preprocessed words
+            // key - TMDB ID, value - list of all words (with duplicates)
+            if(tmdbIds.isEmpty()) {
+                stemmedWords = this.movieToNlpConverter.transform();
+            } else {
+                stemmedWords = this.movieToNlpConverter.transform(tmdbIds);
+            }
+        }
     }
 
     @Async("algorithmsThreadPool")
     @Override
     public CompletableFuture<Set<CompareResult>> run() {
 
-        AtomicLong timer = new AtomicLong(new Date().getTime());
+        if(stemmedWords.isEmpty()) {
+            this.init(new HashSet<>());
+        }
 
-        // get preprocessed words
-        Map<Long, List<String>> stemmedWords = this.movieToNlpConverter.transform();
+        AtomicLong timer = new AtomicLong(new Date().getTime());
 
         Map<String, List<BagOfWords.WordFrequency>> bagOfWords = wordOccurrenceMatrix.get(stemmedWords);
 
@@ -76,7 +104,8 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
             }
         }*/
 
-        int rank = 55; // rank cannot be bigger than amount of documents
+        int rank = Math.min(tfIdfArray[0].length, 55); // rank cannot be bigger than amount of documents
+        rank = Math.min(rank, tfIdfArray.length);
 
         double[][] solved = svdService.solve(tfIdfArray, rank);
 
@@ -107,12 +136,12 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         List<CompletableFuture<List<CompareResultHelper>>> compareResult = new ArrayList<>();
         for (int i = 0; i < documents.size(); i++) {
             documentVector1 = documents.get(i);
-            compareResult.add(this.getCompareResultsForDocument(documentVector1, documents, i, new double[0][]));
+            compareResult.add(this.getCompareResultsForDocument(documentVector1, documents, i));
         }
         Set<CompareResult> results = compareResult.stream()
                 .map(CompletableFuture::join)
                 .flatMap(List::stream)
-                .map(crh -> new CompareResult(crh.getMovieId_1(), crh.getMovieId_2(), crh.getResult_lsa(), null, null))
+                .map(crh -> new CompareResult(crh.getMovieId_1(), crh.getMovieId_2(), crh.getResult_lsa(), crh.getResult_mlsa(), null))
                 .collect(Collectors.toSet());
 
         log.info("Step3 -- " + (new Date().getTime() - timer.get()));
@@ -122,7 +151,9 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         return CompletableFuture.completedFuture(results);
     }
 
-    private CompletableFuture<List<CompareResultHelper>> getCompareResultsForDocument(List<DocumentStats> documentVector1, ArrayList<List<DocumentStats>> documents, int i, double[][] presenceMatrix) {
+    private CompletableFuture<List<CompareResultHelper>> getCompareResultsForDocument(List<DocumentStats> documentVector1, ArrayList<List<DocumentStats>> documents, int i) {
+
+        //log.debug("document iteration " + i);
 
         return CompletableFuture.supplyAsync(() -> {
             List<CompareResultHelper> result = new ArrayList<>();
@@ -137,9 +168,10 @@ public abstract class LatentSemanticAnalysis extends NaturalRanguageProcessing {
                     documentVector2 = documents.get(j);
                     documentId2 = documentVector2.get(0).getDocumentId();
 
-                    Double sim = this.similarityMeasureService.findSimilarity(documentVector1, documentVector2, new double[0]);
+                    Double simLsa = this.cosineSimilarity.findSimilarity(documentVector1, documentVector2);
+                    Double simMlsa = this.modifiedCosineSimilarity.findSimilarity(documentVector1, documentVector2);
 
-                    result.add(new CompareResultHelper(documentId1, documentId2, sim));
+                    result.add(new CompareResultHelper(documentId1, documentId2, simLsa, simMlsa));
                 }
             }
             return result;

@@ -24,10 +24,10 @@ class BagOfWordsTest {
     @Test
     void get() {
 
-        Map<Long, List<String>> documentWordsMap = new HashMap<>();
-        documentWordsMap.put(1L, Arrays.asList("word1", "word2", "word3", "word2"));
-        documentWordsMap.put(2L, Arrays.asList("word1", "word3", "word4", "word5"));
-        documentWordsMap.put(3L, Arrays.asList("word2"));
+        Map<Integer, List<String>> documentWordsMap = new HashMap<>();
+        documentWordsMap.put(1, Arrays.asList("word1", "word2", "word3", "word2"));
+        documentWordsMap.put(2, Arrays.asList("word1", "word3", "word4", "word5"));
+        documentWordsMap.put(3, Arrays.asList("word2"));
 
         Map<String, List<BagOfWords.WordFrequency>> actual = this.service.get(documentWordsMap);
 

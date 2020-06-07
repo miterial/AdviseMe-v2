@@ -1,7 +1,7 @@
 package com.lanagj.adviseme.data_import.movielens;
 
-import com.lanagj.adviseme.entity.movie_list.EvaluationUserMovie;
-import com.lanagj.adviseme.entity.movie_list.EvaluationUserMovieRepository;
+import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovie;
+import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovieRepository;
 import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.input.ReversedLinesFileReader;
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -53,7 +52,7 @@ public class MovielensImporter {
 
                 this.repository.save(new EvaluationUserMovie(
                         userId,
-                        movielensTmdbId.get(movielensMovieId).toString(),
+                        movielensTmdbId.get(movielensMovieId),
                         status));
 
                 i++;

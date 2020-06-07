@@ -1,187 +1,154 @@
 package com.lanagj.adviseme.recommender.evaluation;
 
+import com.lanagj.adviseme.configuration.AlgorithmType;
+import com.lanagj.adviseme.data_import.movielens.MovielensImporter;
+import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
+import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovie;
+import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovieRepository;
+import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovie;
+import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovieRepository;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
-import com.lanagj.adviseme.recommender.nlp.lsa.ModifiedLatentSemanticAnalysis;
-import com.lanagj.adviseme.recommender.nlp.lsa.OriginalLatentSemanticAnalysis;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.lanagj.adviseme.entity.similarity.CompareResultRepository;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Class that determines how good the recommender system is
- */
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toSet;
+
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Slf4j
 public class Evaluation {
 
-    OriginalLatentSemanticAnalysis latentSemanticAnalysis;
-    ModifiedLatentSemanticAnalysis modifiedLatentSemanticAnalysis;
+    private final Double SIMILARITY_LIMIT = 0.7;
 
-    public Evaluation(OriginalLatentSemanticAnalysis latentSemanticAnalysis, ModifiedLatentSemanticAnalysis modifiedLatentSemanticAnalysis) {
+    EvaluationUserMovieRepository evaluationRepository;
+    TestUserMovieRepository testUserMovieRepository;
 
-        this.latentSemanticAnalysis = latentSemanticAnalysis;
-        this.modifiedLatentSemanticAnalysis = modifiedLatentSemanticAnalysis;
+    MovielensImporter movielensImporter;
+    CompareResultRepository compareResultRepository;
+
+    public Evaluation(EvaluationUserMovieRepository evaluationRepository, TestUserMovieRepository testUserMovieRepository, MovielensImporter movielensImporter, CompareResultRepository compareResultRepository) {
+
+        this.evaluationRepository = evaluationRepository;
+        this.testUserMovieRepository = testUserMovieRepository;
+        this.movielensImporter = movielensImporter;
+        this.compareResultRepository = compareResultRepository;
     }
 
-    public void mlsaDifference() {
+    List<EvaluationUserMovie> evaluationMovies;
+    List<TestUserMovie> testMovies;
 
-        long startTime = new Date().getTime();
-
-        CompletableFuture<Set<CompareResult>> lsa = this.latentSemanticAnalysis.run();
-        CompletableFuture<Set<CompareResult>> mlsa = this.modifiedLatentSemanticAnalysis.run();
-
-        Set<CompareResult> lsaJoin = lsa.join();
-        Map<CompareResult.CompareId, CompareResult> lsaMap = lsaJoin.stream().collect(Collectors.toMap(CompareResult::getId_pair, Function.identity()));
-
-        Set<CompareResult> mlsaJoin = mlsa.join();
-        Map<CompareResult.CompareId, CompareResult> mlsaMap = mlsaJoin.stream().collect(Collectors.toMap(CompareResult::getId_pair, Function.identity()));
-
-        System.out.println("Evaluation started -- " + (new Date().getTime() - startTime));
-
-        try {
-            this.exportToExcel(lsaMap, mlsaMap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void init() {
+        evaluationMovies = this.importEvaluationMovies();
+        testMovies = this.selectTestMovies(evaluationMovies);
     }
-/*
 
-    private Map<Integer, Set<CompareResult>> getRandomResults(ArrayList<CompareResult> lsa, ArrayList<CompareResult> mlsa) {
-
-        Map<Integer, Set<CompareResult>> compareResults = new HashMap<>();
-        compareResults.put(1, new HashSet<>());
-        compareResults.put(2, new HashSet<>());
-
-        Random random = new Random();
-        int max = lsa.size();
-        for (int i = 0; i < (Math.min(max, 30)); i++) {
-            int k = random.nextInt(max);
-            compareResults.get(1).add(lsa.get(k));
-            compareResults.get(2).add(mlsa.get(k));
-        }
-
-        return compareResults;
+    public EvaluationResult compare() {
+        log.info("Comparing...");
+        Double f1Score_lsa = this.getF1Score(AlgorithmType.LSA);
+        Double f1Score_mlsa = this.getF1Score(AlgorithmType.MLSA);
+        return new EvaluationResult(f1Score_lsa, f1Score_mlsa);
     }
-*/
 
-    private void exportToExcel(Map<CompareResult.CompareId, CompareResult> lsaMap,
-                               Map<CompareResult.CompareId, CompareResult> mlsaMap) throws IOException {
+    private List<TestUserMovie> selectTestMovies(List<EvaluationUserMovie> evaluationMovies) {
 
-        File currDir = new File(".");
-        String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1) + "test";
+        List<TestUserMovie> result = this.testUserMovieRepository.findAll();
+        if(result.isEmpty()) {
+            log.info("Calculating test dataset");
+            //key - movieId, value - users that rated this movie
+            Map<Integer, Set<Integer>> movies = evaluationMovies.stream().collect(Collectors.groupingBy(EvaluationUserMovie::getMovieId, mapping(EvaluationUserMovie::getUserId, toSet())));
 
-        for (File file : new java.io.File(fileLocation).listFiles()) {
-            if (!file.isDirectory()) {
-                file.delete();
+            List<CompareResult> byMovieIds = this.compareResultRepository.findByMovieIds(movies.keySet());
+
+            for (CompareResult compareResult : byMovieIds) {
+                Integer movieId1 = compareResult.getIdPair().getMovieId1();
+                Set<Integer> userIds = movies.get(movieId1);
+                if(userIds != null) {
+                    for (Integer userId : userIds) {
+                        //lsa
+                        Double simResult = compareResult.getResults().get(AlgorithmType.LSA);
+                        UserMovieStatus status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
+                        result.add(new TestUserMovie(userId, movieId1, status, AlgorithmType.LSA));
+
+                        //mlsa
+                        simResult = compareResult.getResults().get(AlgorithmType.MLSA);
+                        status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
+                        result.add(new TestUserMovie(userId, movieId1, status, AlgorithmType.MLSA));
+                    }
+                }
+
+                Integer movieId2 = compareResult.getIdPair().getMovieId2();
+                userIds = movies.get(movieId2);
+                if( userIds != null) {
+                    for (Integer userId : userIds) {
+                        //lsa
+                        Double simResult = compareResult.getResults().get(AlgorithmType.LSA);
+                        UserMovieStatus status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
+                        result.add(new TestUserMovie(userId, movieId2, status, AlgorithmType.LSA));
+
+                        //mlsa
+                        simResult = compareResult.getResults().get(AlgorithmType.MLSA);
+                        status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
+                        result.add(new TestUserMovie(userId, movieId2, status, AlgorithmType.MLSA));
+                    }
+                }
             }
+
+            this.testUserMovieRepository.saveAll(result);
+
         }
 
-        Workbook workbook = new XSSFWorkbook();
-
-        Sheet sheet = workbook.createSheet("evaluation");
-
-        int rowNum = 0;
-        int colNum = 0;
-
-        Row header = sheet.createRow(rowNum++);
-        Cell valueCell = header.createCell(colNum++);
-        valueCell.setCellValue("IDs");
-
-        valueCell = header.createCell(colNum++);
-        valueCell.setCellValue("LSA");
-        valueCell = header.createCell(colNum++);
-        valueCell.setCellValue("LSA-s");
-
-        valueCell = header.createCell(colNum++);
-        valueCell.setCellValue("MLSA");
-        valueCell = header.createCell(colNum);
-        valueCell.setCellValue("MLSA-s");
-
-        List<Integer> movieIds = Arrays.asList(
-                176403, 74643, 8329, 276624
-                , 212162
-                , 255962
-                , 8386
-                , 394568
-                , 400642
-                , 11547
-        );
-
-        for (CompareResult.CompareId compareId : lsaMap.keySet()) {
-            if(compareId.containsAny(movieIds)) {
-                Row row = sheet.createRow(rowNum++);
-                fillTable(row, compareId, lsaMap.get(compareId), mlsaMap.get(compareId));
-            }
-        }
-
-        fileLocation += "/test.xlsx";
-        FileOutputStream outputStream = new FileOutputStream(fileLocation);
-        workbook.write(outputStream);
-        workbook.close();
+        return result;
     }
 
-    private void fillTable(Row row, CompareResult.CompareId ids, CompareResult lsaMap, CompareResult mlsaMap) {
+    private List<EvaluationUserMovie> importEvaluationMovies() {
 
-        int colNum = 0;
-
-        Cell valueCell = row.createCell(colNum++);
-        valueCell.setCellValue(ids.toString());
-
-        // LSA
-        valueCell = row.createCell(colNum++);
-        Double resLsa = lsaMap.getResult_lsa();
-        valueCell.setCellValue(resLsa);
-
-        // Scaled LSA
-        int val;
-        if (resLsa < 0.33) {
-            val = 1;
-        } else if (resLsa < 0.66) {
-            val = 2;
-        } else {
-            val = 3;
+        List<EvaluationUserMovie> result = this.evaluationRepository.findAll();
+        if(result.isEmpty()) {
+            log.info("Importing movielens dataset");
+            this.movielensImporter.importTestData("movielens");
+            return this.evaluationRepository.findAll();
         }
-        valueCell = row.createCell(colNum++);
-        valueCell.setCellValue(val);
 
-        // MLSA
-        valueCell = row.createCell(colNum++);
-        resLsa = mlsaMap.getResult_lsa();
-        valueCell.setCellValue(resLsa);
-
-        // Scaled MLSA
-        if (resLsa < 0.33) {
-            val = 1;
-        } else if (resLsa < 0.66) {
-            val = 2;
-        } else {
-            val = 3;
-        }
-        valueCell = row.createCell(colNum++);
-        valueCell.setCellValue(val);
+        return result;
 
     }
 
-    public void precisionRecall() {
+    private Double getF1Score(AlgorithmType algorithmType) {
 
-    }
+        List<TestUserMovie> algorithmList = new ArrayList<>(testMovies);
+        algorithmList.removeIf(tum -> tum.getAlgorithmType() != algorithmType);
 
-    /**
-     * <a href="https://link.springer.com/article/10.1007/s13042-017-0762-9#Equ26">Description and formula</a>
-     */
-    public void coverage() {
+        Set<Integer> recommendedIds = algorithmList.stream().filter(tum -> tum.getStatus() == UserMovieStatus.RECOMMENDED).map(TestUserMovie::getMovieId).collect(Collectors.toSet());
+        Set<Integer> notRecommendedIds = algorithmList.stream().filter(tum -> tum.getStatus() == UserMovieStatus.NOT_RECOMMENDED).map(TestUserMovie::getMovieId).collect(Collectors.toSet());;
+        Set<Integer> likedIds = this.evaluationMovies.stream().filter(eum -> eum.getStatus() == UserMovieStatus.LIKED).map(EvaluationUserMovie::getMovieId).collect(toSet());
 
+        recommendedIds.retainAll(likedIds);
+        notRecommendedIds.retainAll(likedIds);
+
+        double recommendedCount = recommendedIds.size();
+        double recommendedLikedCount = recommendedIds.size();
+        double notRecommendedLikedCount = notRecommendedIds.size();
+
+        if(recommendedLikedCount == 0.0 && notRecommendedLikedCount == 0.0) {
+            throw new IllegalStateException("Fix your lists!");
+        }
+
+        Double precision = recommendedLikedCount / recommendedCount;
+        Double recall = recommendedLikedCount / (recommendedLikedCount + notRecommendedLikedCount);
+
+        Double result = (2 * (precision * recall)) / (precision + recall);
+
+        return result;
     }
 
 }

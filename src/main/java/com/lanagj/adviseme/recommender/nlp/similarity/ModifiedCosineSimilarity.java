@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
  * @see <a href="https://commons.apache.org/sandbox/commons-text/jacoco/org.apache.commons.text.similarity/CosineSimilarity.java.html">
  */
 @Service
-public class ModifiedCosineSimilarity implements SimilarityMeasure {
+public class ModifiedCosineSimilarity {
 
-    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2, double[] e) {
+    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2) {
 
         Set<String> wordsDocument1 = document1.stream().map(DocumentStats::getWord).collect(Collectors.toSet());
         Set<String> wordsDocument2 = document2.stream().map(DocumentStats::getWord).collect(Collectors.toSet());

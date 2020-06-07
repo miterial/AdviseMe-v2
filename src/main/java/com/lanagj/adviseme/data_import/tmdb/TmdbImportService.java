@@ -1,6 +1,7 @@
 package com.lanagj.adviseme.data_import.tmdb;
 
 import com.lanagj.adviseme.converter.GeneralConverterService;
+import com.lanagj.adviseme.entity.movie.Movie;
 import com.lanagj.adviseme.entity.movie.MovieRepository;
 import com.uwetrottmann.tmdb2.entities.BaseMovie;
 import com.uwetrottmann.tmdb2.entities.DiscoverFilter;
@@ -38,8 +39,9 @@ public class TmdbImportService {
 
     /**
      * Initial movie import
+     * @return
      */
-    public void importMovies(int pageLimit, int yearMin, int yearMax) {
+    public Set<Integer> importMovies(int pageLimit, int yearMin, int yearMax) {
 
         List<BaseMovie> moviesBaseInfo = new ArrayList<>();
 
@@ -60,7 +62,8 @@ public class TmdbImportService {
 
         System.out.println(movieEntities.size());
 
-        this.movieRepository.saveAll(movieEntities);
+        List<Movie> movies = this.movieRepository.saveAll(movieEntities);
+        return movies.stream().map(Movie::getTmdbId).collect(Collectors.toSet());
     }
 
     private List<BaseMovie> fillWithGenres(List<BaseMovie> moviesBaseInfo) {
@@ -122,8 +125,11 @@ public class TmdbImportService {
         for (Integer movieId : movieIds) {
             try {
                 com.uwetrottmann.tmdb2.entities.Movie movie = this.moviesService.summary(movieId, "ru").execute().body();
-                if (movie != null)
+                // filter out movies without overview or that don't have translation
+                Pattern pattern = Pattern.compile("[^a-zA-Z]");
+                if (movie != null && !movie.overview.isEmpty() && pattern.matcher(movie.overview).find()) {
                     movies.add(movie);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

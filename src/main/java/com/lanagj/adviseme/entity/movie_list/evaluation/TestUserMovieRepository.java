@@ -1,4 +1,4 @@
-package com.lanagj.adviseme.entity.movie_list;
+package com.lanagj.adviseme.entity.movie_list.evaluation;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 

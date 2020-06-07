@@ -1,46 +1,52 @@
 package com.lanagj.adviseme.entity.similarity;
 
+import com.lanagj.adviseme.configuration.AlgorithmType;
+import com.lanagj.adviseme.entity.Entity;
+import com.sun.javafx.scene.traversal.Algorithm;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Document
 @Getter
 @ToString
-public class CompareResult {
+@AllArgsConstructor(onConstructor = @__(@PersistenceConstructor))
+public class CompareResult extends Entity {
 
-    private final CompareId id_pair;
-    private final Double result_lsa;
-    private final Double result_esa;
-    private final Double result_ngram;
+    private final CompareId idPair;
+    private final Map<AlgorithmType, Double> results;
 
-    public CompareResult(Integer id1, Integer id2, Double result_lsa, Double result_esa, Double result_ngram) {
+    public CompareResult(Integer id1, Integer id2, Double result_lsa, Double result_mlsa, Double result_ngram) {
 
-        this.id_pair = new CompareId(id1, id2);
-        this.result_lsa = result_lsa;
-        this.result_esa = result_esa;
-        this.result_ngram = result_ngram;
+        this.idPair = new CompareId(id1, id2);
+
+        this.results = new HashMap<>();
+        this.results.put(AlgorithmType.LSA, result_lsa);
+        this.results.put(AlgorithmType.MLSA, result_mlsa);
     }
 
     @AllArgsConstructor
     @Data
     public static class CompareId {
-        private final Integer movieId_1;
-        private final Integer movieId_2;
+        private final Integer movieId1;
+        private final Integer movieId2;
 
         @Override
         public String toString(){
-            return movieId_1 + " " + movieId_2;
+            return movieId1 + " " + movieId2;
         }
 
         public boolean containsAny(List<Integer> movieIds) {
 
-            return movieIds.contains(movieId_1) && movieIds.contains(movieId_2);
+            return movieIds.contains(movieId1) && movieIds.contains(movieId2);
         }
     }
 
@@ -50,18 +56,18 @@ public class CompareResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CompareResult that = (CompareResult) o;
-        return (Objects.equals(this.id_pair.movieId_1, that.id_pair.movieId_1) &&
-                Objects.equals(this.id_pair.movieId_2, that.id_pair.movieId_2)) ||
-                (Objects.equals(this.id_pair.movieId_1, that.id_pair.movieId_2) &&
-                Objects.equals(this.id_pair.movieId_2, that.id_pair.movieId_1)) &&
-                        Objects.equals(result_lsa, that.result_lsa) &&
-                        Objects.equals(result_esa, that.result_esa)&&
-                        Objects.equals(result_ngram, that.result_ngram);
+        return (Objects.equals(this.idPair.movieId1, that.idPair.movieId1) &&
+                Objects.equals(this.idPair.movieId2, that.idPair.movieId2)) ||
+                (Objects.equals(this.idPair.movieId1, that.idPair.movieId2) &&
+                Objects.equals(this.idPair.movieId2, that.idPair.movieId1)) &&
+                        Objects.equals(results.get(AlgorithmType.LSA), that.results.get(AlgorithmType.LSA)) &&
+                        Objects.equals(results.get(AlgorithmType.MLSA), that.results.get(AlgorithmType.MLSA))&&
+                        Objects.equals(results.get(AlgorithmType.NGRAM), that.results.get(AlgorithmType.NGRAM));
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(result_lsa, result_esa, result_ngram);
+        return Objects.hash(results.get(AlgorithmType.LSA), results.get(AlgorithmType.MLSA), results.get(AlgorithmType.NGRAM));
     }
 }
