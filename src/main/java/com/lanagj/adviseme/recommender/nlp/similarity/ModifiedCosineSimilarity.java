@@ -14,14 +14,16 @@ import java.util.stream.Collectors;
 @Service
 public class ModifiedCosineSimilarity {
 
-    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2) {
+    private final double WEIGHT = 1.5;
+
+    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2, double[] e) {
 
         Set<String> wordsDocument1 = document1.stream().map(DocumentStats::getWord).collect(Collectors.toSet());
         Set<String> wordsDocument2 = document2.stream().map(DocumentStats::getWord).collect(Collectors.toSet());
         Set<String> commonWords = this.getCommonWords(
                 wordsDocument1,
                 wordsDocument2
-                );
+        );
 
         final double dotProduct = dot(
                 document1.stream().collect(Collectors.toMap(DocumentStats::getWord, DocumentStats::getValue)),
@@ -47,7 +49,7 @@ public class ModifiedCosineSimilarity {
         if(d1 <= 0 || d2 <= 0) {
             return 0.0;
         }
-        double v = Math.sqrt(d1) * Math.sqrt(d2);
+        double v = Math.sqrt(d1) * Math.sqrt(d2) * Math.sqrt(WEIGHT);
         cosineSimilarity = dotProduct / v;
         return cosineSimilarity;
     }
@@ -73,7 +75,7 @@ public class ModifiedCosineSimilarity {
             }
             double weight = 0.5;
             if(aDouble > 0 && aDouble1 > 0) {
-                weight = 1.5;
+                weight = WEIGHT;
             }
             dotProduct += aDouble * aDouble1 * weight;
         }
