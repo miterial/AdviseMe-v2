@@ -56,7 +56,8 @@ public class Evaluation {
         log.info("Comparing...");
         Double f1Score_lsa = this.getF1Score(AlgorithmType.LSA);
         Double f1Score_mlsa = this.getF1Score(AlgorithmType.MLSA);
-        return new EvaluationResult(f1Score_lsa, f1Score_mlsa);
+        Double f1Score_ngram = this.getF1Score(AlgorithmType.NGRAM);
+        return new EvaluationResult(f1Score_lsa, f1Score_mlsa, f1Score_ngram);
     }
 
     private List<EvaluationUserMovie> selectTestMovies(List<TestUserMovie> evaluationMovies) {

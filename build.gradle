@@ -55,6 +55,8 @@ dependencies {
 	// apache commons (for reading file lines in reverse order)
 	compile group: 'commons-io', name: 'commons-io', version: '2.7'
 
+	compile fileTree(dir: '/dist', include: '*.jar')
+
 }
 
 test {

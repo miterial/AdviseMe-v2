@@ -16,7 +16,7 @@ public class ModifiedCosineSimilarity {
 
     private final double WEIGHT = 1.5;
 
-    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2, double[] e) {
+    public Double findSimilarity(List<DocumentStats> document1, List<DocumentStats> document2) {
 
         Set<String> wordsDocument1 = document1.stream().map(DocumentStats::getWord).collect(Collectors.toSet());
         Set<String> wordsDocument2 = document2.stream().map(DocumentStats::getWord).collect(Collectors.toSet());

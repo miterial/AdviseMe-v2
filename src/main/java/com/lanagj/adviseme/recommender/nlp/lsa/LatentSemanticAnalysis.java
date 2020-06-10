@@ -1,10 +1,9 @@
 package com.lanagj.adviseme.recommender.nlp.lsa;
 
-import com.lanagj.adviseme.configuration.AlgorithmType;
 import com.lanagj.adviseme.entity.movie.MovieToNLPConverter;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
 import com.lanagj.adviseme.entity.similarity.CompareResultRepository;
-import com.lanagj.adviseme.recommender.nlp.NaturalRanguageProcessing;
+import com.lanagj.adviseme.recommender.nlp.NaturalLanguageProcessing;
 import com.lanagj.adviseme.recommender.nlp.lsa.svd.SVD;
 import com.lanagj.adviseme.recommender.nlp.similarity.CosineSimilarity;
 import com.lanagj.adviseme.recommender.nlp.similarity.ModifiedCosineSimilarity;
@@ -12,7 +11,6 @@ import com.lanagj.adviseme.recommender.nlp.weight.DocumentStats;
 import com.lanagj.adviseme.recommender.nlp.weight.DocumentStatsToArrayConverter;
 import com.lanagj.adviseme.recommender.nlp.weight.WeightMeasure;
 import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.BagOfWords;
-import com.lanagj.adviseme.recommender.nlp.weight.co_occurrence_matrix.WordOccurrenceMatrix;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -29,38 +27,22 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LatentSemanticAnalysis extends NaturalRanguageProcessing {
+public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
 
     SVD svdService;
 
     ThreadPoolTaskExecutor threadPoolExecutor;
 
-    Map<Integer, List<String>> stemmedWords;
-
     private final CosineSimilarity cosineSimilarity;
     private final ModifiedCosineSimilarity modifiedCosineSimilarity;
-    CompareResultRepository compareResultRepository;
 
     protected LatentSemanticAnalysis(MovieToNLPConverter movieToNlpConverter, DocumentStatsToArrayConverter weightStructureConverter, BagOfWords wordOccurrenceMatrix, WeightMeasure weightMeasureService, @Qualifier("lsaCalculationsThreadPool") ThreadPoolTaskExecutor threadPoolExecutor, CosineSimilarity cosineSimilarity, ModifiedCosineSimilarity modifiedCosineSimilarity, CompareResultRepository compareResultRepository) {
 
-        super(movieToNlpConverter, weightStructureConverter, wordOccurrenceMatrix, weightMeasureService);
+        super(movieToNlpConverter, weightStructureConverter, wordOccurrenceMatrix, weightMeasureService, compareResultRepository);
         this.threadPoolExecutor = threadPoolExecutor;
         this.cosineSimilarity = cosineSimilarity;
         this.modifiedCosineSimilarity = modifiedCosineSimilarity;
-        this.compareResultRepository = compareResultRepository;
         this.svdService = new SVD();
-    }
-
-    public void init(Set<Integer> tmdbIds) {
-        if(this.compareResultRepository.count() == 0L) {
-            // get preprocessed words
-            // key - TMDB ID, value - list of all words (with duplicates)
-            if(tmdbIds.isEmpty()) {
-                stemmedWords = this.movieToNlpConverter.transform();
-            } else {
-                stemmedWords = this.movieToNlpConverter.transform(tmdbIds);
-            }
-        }
     }
 
     @Async("algorithmsThreadPool")
@@ -92,17 +74,7 @@ public class LatentSemanticAnalysis extends NaturalRanguageProcessing {
         timer.set(new Date().getTime());
         // perform svd
 
-        double[][] tfIdfArray = this.weightStructureConverter.convert(groupByWord);/*
-        double[][] presenceMatrix = new double[tfIdfArray.length][tfIdfArray.length];
-        for (int i = 0; i < tfIdfArray.length; i++) {
-            for (int j = 0; j < tfIdfArray[i].length; j++) {
-                if(tfIdfArray[i][j] != 0) {
-                    presenceMatrix[i][j] = 1;
-                } else {
-                    presenceMatrix[i][j] = 0;
-                }
-            }
-        }*/
+        double[][] tfIdfArray = this.weightStructureConverter.convert(groupByWord);
 
         int rank = Math.min(tfIdfArray[0].length, 55); // rank cannot be bigger than amount of documents
         rank = Math.min(rank, tfIdfArray.length);
