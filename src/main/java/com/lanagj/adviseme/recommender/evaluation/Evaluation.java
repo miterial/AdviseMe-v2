@@ -3,10 +3,10 @@ package com.lanagj.adviseme.recommender.evaluation;
 import com.lanagj.adviseme.configuration.AlgorithmType;
 import com.lanagj.adviseme.data_import.movielens.MovielensImporter;
 import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
-import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovie;
-import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovieRepository;
 import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovie;
 import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovieRepository;
+import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovie;
+import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovieRepository;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
 import com.lanagj.adviseme.entity.similarity.CompareResultRepository;
 import lombok.AccessLevel;
@@ -30,26 +30,26 @@ public class Evaluation {
 
     private final Double SIMILARITY_LIMIT = 0.7;
 
-    EvaluationUserMovieRepository evaluationRepository;
-    TestUserMovieRepository testUserMovieRepository;
+    TestUserMovieRepository evaluationRepository;
+    EvaluationUserMovieRepository evaluationUserMovieRepository;
 
     MovielensImporter movielensImporter;
     CompareResultRepository compareResultRepository;
 
-    public Evaluation(EvaluationUserMovieRepository evaluationRepository, TestUserMovieRepository testUserMovieRepository, MovielensImporter movielensImporter, CompareResultRepository compareResultRepository) {
+    public Evaluation(TestUserMovieRepository evaluationRepository, EvaluationUserMovieRepository evaluationUserMovieRepository, MovielensImporter movielensImporter, CompareResultRepository compareResultRepository) {
 
         this.evaluationRepository = evaluationRepository;
-        this.testUserMovieRepository = testUserMovieRepository;
+        this.evaluationUserMovieRepository = evaluationUserMovieRepository;
         this.movielensImporter = movielensImporter;
         this.compareResultRepository = compareResultRepository;
     }
 
+    List<TestUserMovie> realUserMovies;
     List<EvaluationUserMovie> evaluationMovies;
-    List<TestUserMovie> testMovies;
 
     public void init() {
-        evaluationMovies = this.importEvaluationMovies();
-        testMovies = this.selectTestMovies(evaluationMovies);
+        realUserMovies = this.importEvaluationMovies();
+        evaluationMovies = this.selectTestMovies(realUserMovies);
     }
 
     public EvaluationResult compare() {
@@ -59,13 +59,13 @@ public class Evaluation {
         return new EvaluationResult(f1Score_lsa, f1Score_mlsa);
     }
 
-    private List<TestUserMovie> selectTestMovies(List<EvaluationUserMovie> evaluationMovies) {
+    private List<EvaluationUserMovie> selectTestMovies(List<TestUserMovie> evaluationMovies) {
 
-        List<TestUserMovie> result = this.testUserMovieRepository.findAll();
+        List<EvaluationUserMovie> result = this.evaluationUserMovieRepository.findAll();
         if(result.isEmpty()) {
             log.info("Calculating test dataset");
             //key - movieId, value - users that rated this movie
-            Map<Integer, Set<Integer>> movies = evaluationMovies.stream().collect(Collectors.groupingBy(EvaluationUserMovie::getMovieId, mapping(EvaluationUserMovie::getUserId, toSet())));
+            Map<Integer, Set<Integer>> movies = evaluationMovies.stream().collect(Collectors.groupingBy(TestUserMovie::getMovieId, mapping(TestUserMovie::getUserId, toSet())));
 
             List<CompareResult> byMovieIds = this.compareResultRepository.findByMovieIds(movies.keySet());
 
@@ -77,12 +77,12 @@ public class Evaluation {
                         //lsa
                         Double simResult = compareResult.getResults().get(AlgorithmType.LSA);
                         UserMovieStatus status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
-                        result.add(new TestUserMovie(userId, movieId1, status, AlgorithmType.LSA));
+                        result.add(new EvaluationUserMovie(userId, movieId1, status, AlgorithmType.LSA));
 
                         //mlsa
                         simResult = compareResult.getResults().get(AlgorithmType.MLSA);
                         status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
-                        result.add(new TestUserMovie(userId, movieId1, status, AlgorithmType.MLSA));
+                        result.add(new EvaluationUserMovie(userId, movieId1, status, AlgorithmType.MLSA));
                     }
                 }
 
@@ -93,26 +93,26 @@ public class Evaluation {
                         //lsa
                         Double simResult = compareResult.getResults().get(AlgorithmType.LSA);
                         UserMovieStatus status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
-                        result.add(new TestUserMovie(userId, movieId2, status, AlgorithmType.LSA));
+                        result.add(new EvaluationUserMovie(userId, movieId2, status, AlgorithmType.LSA));
 
                         //mlsa
                         simResult = compareResult.getResults().get(AlgorithmType.MLSA);
                         status = simResult >= SIMILARITY_LIMIT ? UserMovieStatus.RECOMMENDED : UserMovieStatus.NOT_RECOMMENDED;
-                        result.add(new TestUserMovie(userId, movieId2, status, AlgorithmType.MLSA));
+                        result.add(new EvaluationUserMovie(userId, movieId2, status, AlgorithmType.MLSA));
                     }
                 }
             }
 
-            this.testUserMovieRepository.saveAll(result);
+            this.evaluationUserMovieRepository.saveAll(result);
 
         }
 
         return result;
     }
 
-    private List<EvaluationUserMovie> importEvaluationMovies() {
+    private List<TestUserMovie> importEvaluationMovies() {
 
-        List<EvaluationUserMovie> result = this.evaluationRepository.findAll();
+        List<TestUserMovie> result = this.evaluationRepository.findAll();
         if(result.isEmpty()) {
             log.info("Importing movielens dataset");
             this.movielensImporter.importTestData("movielens");
@@ -125,12 +125,12 @@ public class Evaluation {
 
     private Double getF1Score(AlgorithmType algorithmType) {
 
-        List<TestUserMovie> algorithmList = new ArrayList<>(testMovies);
+        List<EvaluationUserMovie> algorithmList = new ArrayList<>(evaluationMovies);
         algorithmList.removeIf(tum -> tum.getAlgorithmType() != algorithmType);
 
-        Set<Integer> recommendedIds = algorithmList.stream().filter(tum -> tum.getStatus() == UserMovieStatus.RECOMMENDED).map(TestUserMovie::getMovieId).collect(Collectors.toSet());
-        Set<Integer> notRecommendedIds = algorithmList.stream().filter(tum -> tum.getStatus() == UserMovieStatus.NOT_RECOMMENDED).map(TestUserMovie::getMovieId).collect(Collectors.toSet());;
-        Set<Integer> likedIds = this.evaluationMovies.stream().filter(eum -> eum.getStatus() == UserMovieStatus.LIKED).map(EvaluationUserMovie::getMovieId).collect(toSet());
+        Set<Integer> recommendedIds = algorithmList.stream().filter(tum -> tum.getStatus() == UserMovieStatus.RECOMMENDED).map(EvaluationUserMovie::getMovieId).collect(Collectors.toSet());
+        Set<Integer> notRecommendedIds = algorithmList.stream().filter(tum -> tum.getStatus() == UserMovieStatus.NOT_RECOMMENDED).map(EvaluationUserMovie::getMovieId).collect(Collectors.toSet());;
+        Set<Integer> likedIds = this.realUserMovies.stream().filter(eum -> eum.getStatus() == UserMovieStatus.LIKED).map(TestUserMovie::getMovieId).collect(toSet());
 
         recommendedIds.retainAll(likedIds);
         notRecommendedIds.retainAll(likedIds);

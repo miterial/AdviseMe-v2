@@ -1,7 +1,7 @@
 package com.lanagj.adviseme.data_import.movielens;
 
-import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovie;
-import com.lanagj.adviseme.entity.movie_list.evaluation.EvaluationUserMovieRepository;
+import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovie;
+import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovieRepository;
 import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.input.ReversedLinesFileReader;
@@ -17,7 +17,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class MovielensImporter {
 
-    EvaluationUserMovieRepository repository;
+    TestUserMovieRepository repository;
 
     public void importTestData(String folderName) {
 
@@ -50,7 +50,7 @@ public class MovielensImporter {
                 double rating = Double.parseDouble(lineItems[2]);
                 UserMovieStatus status = rating > 3.0 ? UserMovieStatus.LIKED : UserMovieStatus.DISLIKED;
 
-                this.repository.save(new EvaluationUserMovie(
+                this.repository.save(new TestUserMovie(
                         userId,
                         movielensTmdbId.get(movielensMovieId),
                         status));
