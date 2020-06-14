@@ -9,7 +9,7 @@
         <h2 th:inline="text">Здравствуйте, [[${username}]]!</h2>
         <div class="card mb-3">
             <div class="card-header">Ваши фильмы</div>
-            <div class="card-body">
+            <div class="card-body p-2">
                 <ul class="nav nav-tabs" id="user_movies_tabs" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" id="liked-tab" data-toggle="tab" href="#liked" role="tab"
@@ -24,7 +24,7 @@
                            aria-controls="recommended" aria-selected="false">Рекомендации</a>
                     </li>
                 </ul>
-                <div class="tab-content" id="myTabContent">
+                <div class="tab-content p-2" id="myTabContent">
                     <div class="tab-pane fade show active" id="liked" role="tabpanel" aria-labelledby="liked-tab">
                         <table id="movie_table_liked" class="table table-bordered">
                             <thead th:replace="partials/movie_table :: user"/>
@@ -56,13 +56,29 @@
 
     $(document).ready(function () {
 
-        $('#movie_table_recommended').DataTable(recommendedMovies("/users/recommended"));
+        var recommended = $('#movie_table_recommended').DataTable(recommendedMovies("/users/recommended"));
 
-        $('#movie_table_liked').DataTable(userMovies("/users/liked"));
-        $('#movie_table_disliked').DataTable(userMovies("/users/disliked"));
+        var liked = $('#movie_table_liked').DataTable(userMovies("/users/liked"));
+        var disliked = $('#movie_table_disliked').DataTable(userMovies("/users/disliked"));
+
+        /*$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            recommended.columns.adjust();
+            liked.columns.adjust();
+            disliked.columns.adjust();
+        });*/
 
         function recommendedMovies() {
             return {
+                "language":{
+                    "lengthMenu": "Показать _MENU_ фильмов на странице",
+                    "zeroRecords": "Вы не оценили ни одного фильма",
+                    "infoFiltered": "(из _MAX_)",
+                    "search": "Поиск",
+                    "paginate": {
+                        "next":       "Далее",
+                        "previous":   "Назад"
+                    }
+                },
                 "ajax": {
                     "url": "/users/recommended",
                     "type": "GET",
@@ -92,6 +108,16 @@
 
         function userMovies(url) {
             return {
+                "language":{
+                    "lengthMenu": "Показать _MENU_ фильмов на странице",
+                    "zeroRecords": "Вы не оценили ни одного фильма",
+                    "infoFiltered": "(из _MAX_)",
+                    "search": "Поиск",
+                    "paginate": {
+                        "next":       "Далее",
+                        "previous":   "Назад"
+                    }
+                },
                 "ajax": {
                     "url": url,
                     "type": "GET",
@@ -121,8 +147,5 @@
     });
 
 </script>
-
-
-<script th:src="@{static/js/scripts.js}"></script>
 
 </html>

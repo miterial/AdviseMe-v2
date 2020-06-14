@@ -1,6 +1,7 @@
 package com.lanagj.adviseme.recommender.nlp.similarity;
 
 import com.lanagj.adviseme.recommender.nlp.weight.DocumentStats;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://commons.apache.org/sandbox/commons-text/jacoco/org.apache.commons.text.similarity/CosineSimilarity.java.html">
  */
 @Service
+@Slf4j
 public class ModifiedCosineSimilarity {
 
     private final double WEIGHT = 1.5;
@@ -35,6 +37,7 @@ public class ModifiedCosineSimilarity {
 
         double d1 = 0.0d;
         double d2 = 0.0d;
+        double temp = 0.0;
 
         double vectorValue1;
         double vectorValue2;
@@ -44,13 +47,24 @@ public class ModifiedCosineSimilarity {
             vectorValue2 = valuesDocument2.get(i);
             d1 += Math.pow(vectorValue1, 2);
             d2 += Math.pow(vectorValue2, 2);
+
+            if(vectorValue1 > 0 && vectorValue2 > 0) {
+                temp += WEIGHT;
+            } else {
+                temp += 0.5;
+            }
         }
         double cosineSimilarity;
         if(d1 <= 0 || d2 <= 0) {
             return 0.0;
         }
-        double v = Math.sqrt(d1) * Math.sqrt(d2) * Math.sqrt(WEIGHT);
+        double v = Math.sqrt(d1) * Math.sqrt(d2) + Math.sqrt(1 / temp);
         cosineSimilarity = dotProduct / v;
+
+        if(cosineSimilarity > 1.0) {
+            log.info("Ooops, too much");
+        }
+
         return cosineSimilarity;
     }
 
@@ -62,7 +76,7 @@ public class ModifiedCosineSimilarity {
     private double dot(Map<String, Double> valuesFromDocument1,
                        Map<String, Double> valuesFromDocument2,
                        Set<String> commonWords) {
-
+        
         double dotProduct = 0.0;
         for (String commonWord : commonWords) {
             Double aDouble = valuesFromDocument1.get(commonWord);

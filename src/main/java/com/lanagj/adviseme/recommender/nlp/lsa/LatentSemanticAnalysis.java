@@ -49,7 +49,7 @@ public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
     @Override
     public CompletableFuture<Set<CompareResult>> run() {
 
-        if(stemmedWords.isEmpty()) {
+        if(stemmedWords ==null ||stemmedWords.isEmpty()) {
             this.init(new HashSet<>());
         }
 
@@ -105,14 +105,14 @@ public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
         groupByDocument.clear();
 
         List<DocumentStats> documentVector1;
-        List<CompletableFuture<List<CompareResultHelper>>> compareResult = new ArrayList<>();
+        List<CompletableFuture<Set<CompareResultHelper>>> compareResult = new ArrayList<>();
         for (int i = 0; i < documents.size(); i++) {
             documentVector1 = documents.get(i);
             compareResult.add(this.getCompareResultsForDocument(documentVector1, documents, i));
         }
         Set<CompareResult> results = compareResult.stream()
                 .map(CompletableFuture::join)
-                .flatMap(List::stream)
+                .flatMap(Set::stream)
                 .map(crh -> new CompareResult(crh.getMovieId_1(), crh.getMovieId_2(), crh.getResult_lsa(), crh.getResult_mlsa(), null))
                 .collect(Collectors.toSet());
 
@@ -123,12 +123,12 @@ public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
         return CompletableFuture.completedFuture(results);
     }
 
-    private CompletableFuture<List<CompareResultHelper>> getCompareResultsForDocument(List<DocumentStats> documentVector1, ArrayList<List<DocumentStats>> documents, int i) {
+    private CompletableFuture<Set<CompareResultHelper>> getCompareResultsForDocument(List<DocumentStats> documentVector1, ArrayList<List<DocumentStats>> documents, int i) {
 
         //log.debug("document iteration " + i);
 
         return CompletableFuture.supplyAsync(() -> {
-            List<CompareResultHelper> result = new ArrayList<>();
+            Set<CompareResultHelper> result = new HashSet<>();
             List<DocumentStats> documentVector2;
             Integer documentId2;
             Integer documentId1 = documentVector1.get(0).getDocumentId();

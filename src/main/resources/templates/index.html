@@ -7,62 +7,21 @@
 <main class="my-5">
     <div class="container">
         <div class="form-group">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#importUsers">Bulk Import Users</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changeBlogInfo">Change Blog Info</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPosts">Create Posts</button>
-            <button id="enable_visual" class="btn btn-secondary float-right">Toggle visual</button>
-        </div>
-        <div class="form-group">
             <div class="card card-body">
-                <div class="form-inline">
-                    <button class="btn btn-sm btn-secondary mr-1" data-toggle="modal" data-target="#changeCategory">Change category</button>
-                    <button id="deleteLastPost" class="btn btn-sm btn-secondary mr-1">Delete last post</button>
-                    <button id="deleteBlogs" class="btn btn-sm btn-secondary mr-1">Delete blogs</button>
-                    <button id="openBlogs" class="btn btn-sm btn-secondary">Open blogs</button>
-                    <button class="btn btn-danger ml-auto" type="button" data-toggle="collapse" data-target="#showErrorLog" aria-expanded="false" aria-controls="showErrorLog">Show errors</button>
-                </div>
-
-                <div class="collapse mt-2" id="showErrorLog">
-                    <div class="card card-body">
-                    </div>
-                </div>
+                <table id="movie_table" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Оценка</th>
+                        <th>Дата оценки</th>
+                    </tr>
+                    </thead>
+                </table>
             </div>
         </div>
-        <table id="movie_table" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Название</th>
-                    <th>Описание</th>
-                    <th>Оценка пользователя</th>
-                    <th>Дата оценки</th>
-                </tr>
-            </thead>
-        </table>
     </div>
 </main>
-
-<div class="modal fade" id="changeCategory" tabindex="-1" role="dialog" aria-labelledby="changeCategoryLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="changeCategoryLabel">Change Blog Info</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="new-category">New category name:</label>
-                    <input type="text" class="form-control" id="new-category">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-submit">Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 </body>
 
