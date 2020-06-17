@@ -14,9 +14,9 @@ public class UserMovie extends AbstractUserMovie {
     /** Date when the movie was marked as seen */
     Long date;
 
-    public UserMovie(String userId, String movieId, UserMovieStatus type, Double rating, Long date) {
+    public UserMovie(String userId, String movieId, UserMovieStatus status, Double rating, Long date) {
 
-        super(userId, movieId, type);
+        super(userId, movieId, status);
         this.rating = rating;
         this.date = date;
     }

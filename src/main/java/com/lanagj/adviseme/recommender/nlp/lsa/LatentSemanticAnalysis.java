@@ -49,7 +49,7 @@ public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
     @Override
     public CompletableFuture<Set<CompareResult>> run() {
 
-        if(stemmedWords ==null ||stemmedWords.isEmpty()) {
+        if(stemmedWords == null ||stemmedWords.isEmpty()) {
             this.init(new HashSet<>());
         }
 
@@ -69,6 +69,8 @@ public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
 
         // group by word => create word vectors
         Map<String, List<DocumentStats>> groupByWord = wordDocumentMatrix.stream().collect(Collectors.groupingBy(DocumentStats::getWord));
+
+        wordDocumentMatrix.clear();
 
         log.info("Step1 -- " + (new Date().getTime() - timer.get()));
         timer.set(new Date().getTime());
@@ -101,7 +103,6 @@ public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
         ArrayList<List<DocumentStats>> documents = new ArrayList<>(groupByDocument.values());
 
         matrix.clear();
-        wordDocumentMatrix.clear();
         groupByDocument.clear();
 
         List<DocumentStats> documentVector1;
@@ -143,7 +144,7 @@ public class LatentSemanticAnalysis extends NaturalLanguageProcessing {
                     Double simLsa = this.cosineSimilarity.findSimilarity(documentVector1, documentVector2);
                     Double simMlsa = this.modifiedCosineSimilarity.findSimilarity(documentVector1, documentVector2);
 
-                    result.add(new CompareResultHelper(documentId1, documentId2, simLsa, simMlsa));
+                    result.add(new CompareResultHelper(documentId1, documentId2, simLsa, simMlsa - 0.1));
                 }
             }
             return result;

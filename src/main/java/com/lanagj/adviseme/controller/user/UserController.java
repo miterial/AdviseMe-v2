@@ -23,7 +23,7 @@ public class UserController {
     @GetMapping
     public ModelAndView getUserProfile(ModelAndView model, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         model.addObject("username", userPrincipal.getUsername());
-        model.setViewName("user_profile");
+        model.setViewName("index");
         return model;
     }
 
@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping("/recommended")
     public List<UserMovieDtoOut> getRecommendedMovies(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        List<UserMovieDtoOut> movies = this.userService.getMovies(UserMovieStatus.RECOMMENDED, userPrincipal.getId());
+        List<UserMovieDtoOut> movies = this.userService.getRecommendedMovies(UserMovieStatus.RECOMMENDED, userPrincipal.getId());
         return movies;
     }
 

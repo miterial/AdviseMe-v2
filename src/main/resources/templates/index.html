@@ -6,18 +6,41 @@
 
 <main class="my-5">
     <div class="container">
-        <div class="form-group">
-            <div class="card card-body">
-                <table id="movie_table" class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Название</th>
-                        <th>Описание</th>
-                        <th>Оценка</th>
-                        <th>Дата оценки</th>
-                    </tr>
-                    </thead>
-                </table>
+        <h2 th:inline="text">Здравствуйте, [[${username}]]!</h2>
+        <div class="card mb-3">
+            <div class="card-header">Ваши фильмы</div>
+            <div class="card-body p-2">
+                <ul class="nav nav-tabs" id="user_movies_tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="liked-tab" data-toggle="tab" href="#liked" role="tab"
+                           aria-controls="liked" aria-selected="true">Понравились</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="disliked-tab" data-toggle="tab" href="#disliked" role="tab"
+                           aria-controls="disliked" aria-selected="false">Не понравились</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="recommended-tab" data-toggle="tab" href="#recommended" role="tab"
+                           aria-controls="recommended" aria-selected="false">Рекомендации</a>
+                    </li>
+                </ul>
+                <div class="tab-content p-2" id="myTabContent">
+                    <div class="tab-pane fade show active" id="liked" role="tabpanel" aria-labelledby="liked-tab">
+                        <table id="movie_table_liked" class="table table-bordered">
+                            <thead th:replace="partials/movie_table :: user"/>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="disliked" role="tabpanel" aria-labelledby="disliked-tab">
+                        <table id="movie_table_disliked" class="table table-bordered">
+                            <thead th:replace="partials/movie_table :: user"/>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="recommended" role="tabpanel" aria-labelledby="recommended-tab">
+                        <table id="movie_table_recommended" class="table table-bordered">
+                            <thead th:replace="partials/movie_table :: recommendation"/>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -28,64 +51,102 @@
 <footer th:replace="partials/footer :: footer"></footer>
 
 <script>
-    $(document).ready(function() {
-        var user_id;
-        var table = $('#movie_table').DataTable({
-            "ajax": {
-                "url": user_id + "/movies",
-                "type": "GET",
-                "dataSrc": ""
-            },
-            "dom": 'Blfrtip',
-            "buttons": [
-                'selectAll',
-                'selectNone'
-            ],
-            "language": {
-                "buttons": {
-                    "selectAll": "Select all items",
-                    "selectNone": "Select none"
-                }
-            },
-            "aoColumns": [
-                {"data": "user.movies"},
-                {"data": "password_plain"},
-                {
-                    "mData": "blog",
-                    "mRender": function (data, type, row) {
-                        return "<a href='" + data  + "' target='_blank'>" + data + "</a>";
-                    }},
-                {"data": "category"},
-                {
-                    "mData": "postSuccess",
-                    "mRender": function (data, type, row) {
-                        var classAppend = 'badge-danger';
-                        var text = 'fail';
-                        if(data) {
-                            classAppend = 'badge-success';
-                            text = 'success';
-                        }
 
-                        return "<span class='badge " + classAppend  + "'>" + text + "</span>";
+    /** USER MOVIES */
+
+    $(document).ready(function () {
+
+        var recommended = $('#movie_table_recommended').DataTable(recommendedMovies("/users/recommended"));
+
+        var liked = $('#movie_table_liked').DataTable(userMovies("/users/liked"));
+        var disliked = $('#movie_table_disliked').DataTable(userMovies("/users/disliked"));
+
+        /*$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            recommended.columns.adjust();
+            liked.columns.adjust();
+            disliked.columns.adjust();
+        });*/
+
+        function recommendedMovies() {
+            return {
+                "language":{
+                    "lengthMenu": "Показать _MENU_ фильмов на странице",
+                    "zeroRecords": "Вы не оценили ни одного фильма",
+                    "infoFiltered": "(из _MAX_)",
+                    "search": "Поиск",
+                    "paginate": {
+                        "next":       "Далее",
+                        "previous":   "Назад"
                     }
+                },
+                "ajax": {
+                    "url": "/users/recommended",
+                    "type": "GET",
+                    "dataSrc": ""
+                },
+                "order":[],
+                "columns": [
+                    {"data": "movie_title"},
+                    {"data": "movie_overview"},
+                    {"data": "avg_rating"},
+                    {
+                        "data": "user_rating_date",
+                        "render": function (data, type, row) {
+                            //todo: trim to days
+                            return new Date(data).toLocaleString();
+                        },
+                        "searchable": false
+                    }
+                ],
+                "infoCallback": function (settings, start, end, max, total, pre) {
+                    return 'Всего: ' + total;
+                },
+                "createdRow": function (row, data, indice) {
+                    $(row).attr('data-id', data.movie_id);
                 }
-            ],
-            "infoCallback": function( settings, start, end, max, total, pre ) {
-                return 'Total movies: ' + total;
-            },
-            "select": {
-                "style": 'multi'
-            },
-            "createdRow": function (row, data, indice) {
-                $(row).attr('data-id', data.id);
             }
-        });
+        }
 
-        setInterval(function () {
-            if(!$(".table tr").hasClass("selected"))
-                table.ajax.reload(null, false);
-        }, 5000);
-    } );
+        function userMovies(url) {
+            return {
+                "language":{
+                    "lengthMenu": "Показать _MENU_ фильмов на странице",
+                    "zeroRecords": "Вы не оценили ни одного фильма",
+                    "infoFiltered": "(из _MAX_)",
+                    "search": "Поиск",
+                    "paginate": {
+                        "next":       "Далее",
+                        "previous":   "Назад"
+                    }
+                },
+                "ajax": {
+                    "url": url,
+                    "type": "GET",
+                    "dataSrc": ""
+                },
+                "columns": [
+                    {"data": "movie_title"},
+                    {"data": "movie_overview"},
+                    {"data": "avg_rating"},
+                    {"data": "user_rating"},
+                    {
+                        "data": "user_rating_date",
+                        "render": function (data, type, row) {
+                            return new Date(data).toLocaleString();
+                        },
+                        "searchable": false
+                    }
+                ],
+                "infoCallback": function (settings, start, end, max, total, pre) {
+                    return 'Всего: ' + total;
+                },
+                "createdRow": function (row, data, indice) {
+                    $(row).attr('data-id', data.movie_id);
+                }
+            }
+        }
+    });
 
 </script>
+
 </html>

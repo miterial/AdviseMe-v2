@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class Shingles extends NaturalLanguageProcessing {
 
-    private final int NGRAM_SIZE = 4;
+    private final int NGRAM_SIZE = 2;
 
     JaccardSimilarity jaccardSimilarity;
 

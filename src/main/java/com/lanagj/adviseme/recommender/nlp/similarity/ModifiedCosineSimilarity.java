@@ -48,17 +48,12 @@ public class ModifiedCosineSimilarity {
             d1 += Math.pow(vectorValue1, 2);
             d2 += Math.pow(vectorValue2, 2);
 
-            if(vectorValue1 > 0 && vectorValue2 > 0) {
-                temp += WEIGHT;
-            } else {
-                temp += 0.5;
-            }
         }
         double cosineSimilarity;
         if(d1 <= 0 || d2 <= 0) {
             return 0.0;
         }
-        double v = Math.sqrt(d1) * Math.sqrt(d2) + Math.sqrt(1 / temp);
+        double v = Math.sqrt(d1) * Math.sqrt(d2) * Math.sqrt(WEIGHT);
         cosineSimilarity = dotProduct / v;
 
         if(cosineSimilarity > 1.0) {
@@ -76,7 +71,7 @@ public class ModifiedCosineSimilarity {
     private double dot(Map<String, Double> valuesFromDocument1,
                        Map<String, Double> valuesFromDocument2,
                        Set<String> commonWords) {
-        
+
         double dotProduct = 0.0;
         for (String commonWord : commonWords) {
             Double aDouble = valuesFromDocument1.get(commonWord);

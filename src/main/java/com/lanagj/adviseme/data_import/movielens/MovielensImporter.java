@@ -4,22 +4,28 @@ import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovie;
 import com.lanagj.adviseme.entity.movie_list.evaluation.TestUserMovieRepository;
 import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class MovielensImporter {
 
     TestUserMovieRepository repository;
 
-    public void importTestData(String folderName) {
+    public void importTestData(String folderName, int limit) {
+
+        log.info("Importing links data");
 
         String line;
         String cvsSplitBy = ",";
@@ -38,11 +44,12 @@ public class MovielensImporter {
             e.printStackTrace();
         }
 
+        log.info("Importing ratings data");
         String ratingsFile = this.getFilePath(folderName, "ratings.csv");
         try (ReversedLinesFileReader fr = new ReversedLinesFileReader(new File(ratingsFile), Charset.defaultCharset())) {
 
-            int i = 0;
-            while ((line = fr.readLine()) != null && i != 5_000_000) {
+            List<TestUserMovie> result = new ArrayList<>();
+            while ((line = fr.readLine()) != null && result.size() < limit) {
                 String[] lineItems = line.split(cvsSplitBy);
 
                 Integer userId = Integer.parseInt(lineItems[0]);
@@ -50,13 +57,12 @@ public class MovielensImporter {
                 double rating = Double.parseDouble(lineItems[2]);
                 UserMovieStatus status = rating > 3.0 ? UserMovieStatus.LIKED : UserMovieStatus.DISLIKED;
 
-                this.repository.save(new TestUserMovie(
+                result.add(new TestUserMovie(
                         userId,
                         movielensTmdbId.get(movielensMovieId),
                         status));
-
-                i++;
             }
+            this.repository.saveAll(result);
 
         } catch (IOException e) {
             e.printStackTrace();

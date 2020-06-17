@@ -26,9 +26,9 @@ class TmdbImportServiceTest extends AdviseMeApplicationTests {
     @Test
     void importMovies() {
 
-        this.tmdbImportService.importMovies(1, 2000, 2010);
+        this.tmdbImportService.importMovies(1, 1, 100);
 
         List<Movie> movies = this.mongoTemplate.find(new Query(), Movie.class);
-        assertEquals(101, movies.size());
+        assertEquals(100, movies.size());
     }
 }

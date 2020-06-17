@@ -14,10 +14,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.mapping;
@@ -28,7 +25,7 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 public class Evaluation {
 
-    private final Double SIMILARITY_LIMIT = 0.7;
+    private final Double SIMILARITY_LIMIT = 0.6;
 
     TestUserMovieRepository evaluationRepository;
     EvaluationUserMovieRepository evaluationUserMovieRepository;
@@ -48,7 +45,9 @@ public class Evaluation {
     List<EvaluationUserMovie> evaluationMovies;
 
     public void init() {
-        realUserMovies = this.importEvaluationMovies();
+        if(realUserMovies == null || realUserMovies.isEmpty()) {
+            realUserMovies = this.importEvaluationMovies(10);
+        }
         evaluationMovies = this.selectTestMovies(realUserMovies);
     }
 
@@ -69,6 +68,9 @@ public class Evaluation {
             Map<Integer, Set<Integer>> movies = evaluationMovies.stream().collect(Collectors.groupingBy(TestUserMovie::getMovieId, mapping(TestUserMovie::getUserId, toSet())));
 
             List<CompareResult> byMovieIds = this.compareResultRepository.findByMovieIds(movies.keySet());
+
+            CompareResult maxCompareResultMlsa = byMovieIds.stream().max(Comparator.comparing(x -> x.getResults().get(AlgorithmType.MLSA))).get();
+            System.out.println("max compare result by MLSA: " + maxCompareResultMlsa);
 
             for (CompareResult compareResult : byMovieIds) {
                 Integer movieId1 = compareResult.getIdPair().getMovieId1();
@@ -111,12 +113,12 @@ public class Evaluation {
         return result;
     }
 
-    private List<TestUserMovie> importEvaluationMovies() {
+    public List<TestUserMovie> importEvaluationMovies(int limit) {
 
         List<TestUserMovie> result = this.evaluationRepository.findAll();
         if(result.isEmpty()) {
             log.info("Importing movielens dataset");
-            this.movielensImporter.importTestData("movielens");
+            this.movielensImporter.importTestData("movielens", limit);
             return this.evaluationRepository.findAll();
         }
 
@@ -133,21 +135,28 @@ public class Evaluation {
         Set<Integer> notRecommendedIds = algorithmList.stream().filter(tum -> tum.getStatus() == UserMovieStatus.NOT_RECOMMENDED).map(EvaluationUserMovie::getMovieId).collect(Collectors.toSet());;
         Set<Integer> likedIds = this.realUserMovies.stream().filter(eum -> eum.getStatus() == UserMovieStatus.LIKED).map(TestUserMovie::getMovieId).collect(toSet());
 
+        double recommendedCount = recommendedIds.size();
+
         recommendedIds.retainAll(likedIds);
         notRecommendedIds.retainAll(likedIds);
 
-        double recommendedCount = recommendedIds.size();
         double recommendedLikedCount = recommendedIds.size();
         double notRecommendedLikedCount = notRecommendedIds.size();
 
-        if(recommendedLikedCount == 0.0 && notRecommendedLikedCount == 0.0) {
+        log.info("type={}, recommended={}, rec+liked={}, not_rec+liked={}", algorithmType, recommendedCount, recommendedLikedCount, notRecommendedLikedCount);
+
+        /*if(recommendedLikedCount == 0.0 && notRecommendedLikedCount == 0.0) {
             throw new IllegalStateException("Fix your lists!");
-        }
+        }*/
 
         Double precision = recommendedLikedCount / recommendedCount;
         Double recall = recommendedLikedCount / (recommendedLikedCount + notRecommendedLikedCount);
 
         Double result = (2 * (precision * recall)) / (precision + recall);
+
+        if(result.isNaN()) {
+            return 0.0;
+        }
 
         return result;
     }

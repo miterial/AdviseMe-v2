@@ -48,6 +48,11 @@ public class CompareResult extends Entity {
 
             return movieIds.contains(movieId1) && movieIds.contains(movieId2);
         }
+
+        public CompareId switchIds() {
+
+            return new CompareId(movieId2, movieId1);
+        }
     }
 
     @Override

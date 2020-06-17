@@ -35,7 +35,7 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+	//testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 
 	// apache commons-math3 (for svd)
 	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'

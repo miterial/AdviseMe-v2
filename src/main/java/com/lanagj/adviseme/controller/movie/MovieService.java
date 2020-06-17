@@ -52,7 +52,7 @@ public class MovieService {
                 throw new EntityNotFoundException("Movie");
             }
 
-            LocalDate localDate = LocalDate.ofEpochDay(userMovie.getDate());
+            Date localDate = new Date(userMovie.getDate());
             nf.setMaximumFractionDigits(1);
             String formattedAvgRating = nf.format(movie.getVoteAverage().doubleValue());
             result.add(new UserMovieDtoOut(
@@ -65,5 +65,11 @@ public class MovieService {
 
         }
         return result;
+    }
+
+
+    public List<Movie> getMoviesByTmdbIds(Set<Integer> recommendedIds) {
+
+        return this.movieRepository.findAllByTmdbIdIn(recommendedIds);
     }
 }

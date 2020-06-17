@@ -39,14 +39,16 @@ public class TmdbImportService {
 
     /**
      * Initial movie import
+     *
+     * @param countLimit
      * @return
      */
-    public Set<Integer> importMovies(int pageLimit, int yearMin, int yearMax) {
+    public Set<Integer> importMovies(int pageStart, int pageEnd, int countLimit) {
 
         List<BaseMovie> moviesBaseInfo = new ArrayList<>();
 
-        for (int year = yearMin; year <= yearMax; year++) {
-            moviesBaseInfo.addAll(this.getFromPage(pageLimit, year));
+        for (int year = 1996; year <= 2019; year++) {
+            moviesBaseInfo.addAll(this.getFromPage(pageStart, pageEnd, year));
         }
 
         // filter out movies without overview or that don't have translation
@@ -56,13 +58,14 @@ public class TmdbImportService {
                         m.overview.isEmpty() ||
                         !pattern.matcher(m.overview).find());
 
-        this.fillWithGenres(moviesBaseInfo);
+        //this.fillWithGenres(moviesBaseInfo);
 
         List<com.lanagj.adviseme.entity.movie.Movie> movieEntities = this.movieConverter.convertList(moviesBaseInfo, BaseMovie.class, com.lanagj.adviseme.entity.movie.Movie.class);
 
-        System.out.println(movieEntities.size());
-
-        List<Movie> movies = this.movieRepository.saveAll(movieEntities);
+        // save limited amount of movies
+        int max = Math.min(countLimit, movieEntities.size());
+        System.out.println("importing movies: " + max);
+        List<Movie> movies = this.movieRepository.saveAll(movieEntities.subList(0, max));
         return movies.stream().map(Movie::getTmdbId).collect(Collectors.toSet());
     }
 
@@ -86,15 +89,15 @@ public class TmdbImportService {
     /**
      * Get movies filtered by year and sorted by release date
      *
-     * @param pageLimit page limit
+     * @param pageStart page start
      * @param year      movie release year
      * @return list of movies from pages
      */
-    private List<BaseMovie> getFromPage(int pageLimit, int year) {
+    private List<BaseMovie> getFromPage(int pageStart, int pageEnd, int year) {
 
         List<BaseMovie> pageResultsList = new ArrayList<>();
 
-        List<CompletableFuture<MovieResultsPage>> listOfFutures = IntStream.rangeClosed(1, pageLimit)
+        List<CompletableFuture<MovieResultsPage>> listOfFutures = IntStream.rangeClosed(pageStart, pageEnd)
                 .mapToObj(i -> CompletableFuture.supplyAsync(
                         () -> {
                             MovieResultsPage pageResults;
@@ -105,7 +108,7 @@ public class TmdbImportService {
                                 return pageResults;
 
                             } catch (IOException | NullPointerException e) {
-                                log.error("Error retrieving movies on page {} in year {}. Cause: {}", pageLimit, year, e.getMessage());
+                                log.error("Error retrieving movies in year {}. Cause: {}", year, e.getMessage());
                             }
                             // todo: this is unsafe
                             return new MovieResultsPage();
@@ -119,21 +122,28 @@ public class TmdbImportService {
         return pageResultsList;
     }
 
-    public List<BaseMovie> getMovies(Set<Integer> movieIds) {
+    public List<Movie> importMovies(Set<Integer> movieIds) {
 
         List<BaseMovie> movies = new ArrayList<>();
         for (Integer movieId : movieIds) {
             try {
                 com.uwetrottmann.tmdb2.entities.Movie movie = this.moviesService.summary(movieId, "ru").execute().body();
-                // filter out movies without overview or that don't have translation
-                Pattern pattern = Pattern.compile("[^a-zA-Z]");
-                if (movie != null && !movie.overview.isEmpty() && pattern.matcher(movie.overview).find()) {
-                    movies.add(movie);
+
+                if(movie != null) {
+                    // filter out movies without overview or that don't have translation
+                    if(!movie.overview.isEmpty()) {
+                        Pattern pattern = Pattern.compile("[^a-zA-Z]");
+                        if (pattern.matcher(movie.overview).find()) {
+                            movies.add(movie);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return movies;
+
+        List<com.lanagj.adviseme.entity.movie.Movie> movieEntities = this.movieConverter.convertList(movies, BaseMovie.class, com.lanagj.adviseme.entity.movie.Movie.class);
+        return movieEntities;
     }
 }
