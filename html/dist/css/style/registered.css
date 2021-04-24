@@ -1,0 +1,92 @@
+.mybutton {
+  width: 200px;
+  height: 40px;
+  border: solid 2px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  outline: none;
+  margin: 0 auto;
+}
+.centered {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.link-hover {
+  border-bottom: 5px solid #9d1927;
+}
+.title {
+  color: #ec9322;
+}
+.movieslists {
+  padding-top: 5%;
+  padding-bottom: 5%;
+  background-color: #fec343;
+  position: relative;
+}
+.movieslists section {
+  display: none;
+  padding: 20px 0 0;
+  width: 90%;
+}
+.movieslists .tab-style {
+  display: none;
+}
+.movieslists input[id^="tab"] + label {
+  display: inline-block;
+  margin: 0 0 -1px;
+  padding: 15px 25px;
+  font-weight: 600;
+  text-align: center;
+  color: #000;
+  position: relative;
+  width: 30%;
+  white-space: nowrap;
+}
+.movieslists label:hover {
+  cursor: pointer;
+}
+.movieslists input[id^="tab"]:hover + label {
+  border-bottom: 5px solid #9d1927;
+}
+.movieslists input[id^="tab"]:checked + label {
+  border-bottom: 5px solid #9d1927;
+}
+.movieslists #tab1:checked ~ #content1,
+.movieslists #tab2:checked ~ #content2,
+.movieslists #tab3:checked ~ #content3 {
+  display: block;
+}
+@media screen and (max-width: 650px) {
+  .movieslists label {
+    font-size: 0;
+  }
+  .movieslists label:before {
+    margin: 0;
+    font-size: 18px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .movieslists label {
+    padding: 15px;
+  }
+}
+.movieslists .myslyder {
+  position: relative;
+}
+.movieslists .slider-item {
+  display: inline-block;
+  padding-top: 2em;
+}
+.movieslists .slick-prev:before {
+  content: "\f0d9";
+  font: 30px/1 'FontAwesome';
+  color: #9d1927;
+}
+.movieslists .slick-next:before {
+  content: "\f0da";
+  font: 30px/1 'FontAwesome';
+  color: #9d1927;
+}

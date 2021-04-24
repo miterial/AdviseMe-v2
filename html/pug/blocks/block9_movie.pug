@@ -1,0 +1,94 @@
+mixin review
+	.movie-review
+		.row
+			.col-lg-1
+				a(href="#") avatar
+					img()
+			.col-lg-1
+				p name
+			.col-lg-1
+				p 6/10
+			.col-lg-9.text-right
+				a(href="#") 20 марта 2018
+		.row
+			.offset-lg-1.col-lg-11
+				p Etiam at neque venenatis, rhoncus sapien vestibulum, auctor tortor. Etiam lacinia, dolor ac elementum tincidunt, ante nulla mollis nunc, vel sollicitudin lectus est nec sem. Suspendisse potenti. Nulla nec imperdiet odio, id vestibulum ipsum. Aenean blandit quam tortor, id porta arcu varius sed. Nunc id quam eu erat cursus viverra. Sed nec urna lectus. Maecenas nec pellentesque lorem. Nullam commodo eros quis leo ultricies, eu sagittis lorem laoreet.
+
+
+.movie-detail
+	.movie-detail--poster
+			
+	.container.upper
+		.media.mb-3
+			img.movie-detail--info.mr-3(src="/dist/images/westposter.jpg" alt="movie" width="180px")
+			.media-body.align-self-end
+				h3(class="mt-0") Мир дикого запада (2016 – ...)
+				p.text-muted Westworld
+		.row
+			.col-lg-2.col-sm-12.text-center
+				a.inline-block(href="#") Показать трейлер
+			.col-lg-10.col-sm-12
+				p.d-inline.font-weight-bold Прогноз AdviseMe: 
+				p.d-inline.prediction 8/10
+		.row.mt-3
+			.col-lg-2.col-sm-12.p-0
+				.movies-related
+					p Похожие сериалы
+					label
+						a(href="#")
+							img(src="/dist/images/jjposter.jpg" alt="movie" width="100%")
+							|  Джессика Джонс
+					label.mt-3
+						img(src="/dist/images/jjposter.jpg" alt="movie" width="100%")
+						|  Джессика Джонс
+					label.mt-3
+						img(src="/dist/images/jjposter.jpg" alt="movie" width="100%")
+						|  Джессика Джонс
+					label.mt-3
+						img(src="/dist/images/jjposter.jpg" alt="movie" width="100%")
+						|  Джессика Джонс
+					label.mt-3
+						img(src="/dist/images/jjposter.jpg" alt="movie" width="100%")
+						|  Джессика Джонс
+					a(href="movies.html") Показать больше
+			.col-lg-10.col-sm-12
+
+				p.d-inline AdviseMe: 
+				p.d-inline.font-weight-bold#rateAM 9.1
+				p.d-inline IMDB: 
+				p.d-inline.font-weight-bold#rateIMDB 8.5
+				p.d-inline Кинопоиск: 
+				p.d-inline.font-weight-bold#rateKP 8.9
+				p.font-weight-bold.mt-3 Жанр: 
+					a.movie-detail--list(href="#") фантастика
+					| , 
+					a.movie-detail--list(href="#") детектив
+					| , 
+					a.movie-detail--list(href="#") драма
+					| , 
+					a.movie-detail--list(href="#") вестерн
+				p.font-weight-bold Страна: 
+					a.movie-detail--list(href="#") США
+				p.d-inline.font-weight-bold Премьера: 
+				p.d-inline 30 сентября 2016
+				p.mt-3 В футуристическом парке развлечений "Мир Дикого Запада" специально сконструированные андроиды выполняют любые прихоти посетителей, чтобы те чувствовали...
+					button#more далее
+				p.movie-makers Режиссёр
+				a(href="#") Джонатан Нолан
+				| , 
+				a(href="#") Фред Туа
+				p.movie-makers.mt-3 В ролях
+				a(href="#") Эван Рейчел Вуд
+				| , 
+				a(href="#") Тэнди Ньютон
+				| , 
+				a(href="#") Джеффри Райт
+				| , 
+				a(href="#") Джеймс Мардсен
+				| , 
+				a(href="#") Эд Харрис
+				| , 
+				a(href="#") Энтони Хопкинс
+				p.movie-makers.mt-3 Отзывы пользователей
+				+review
+				+review

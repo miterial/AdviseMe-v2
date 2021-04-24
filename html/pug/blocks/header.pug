@@ -1,0 +1,20 @@
+header
+	nav.navbar.navbar-light.navbar-expand-lg
+		.container
+			.navbar-header.logo
+				a.navbar-brand.title(href="#") #{CompanyName}
+			button.navbar-toggler(type="button" data-toggle="collapse" data-target="#mainnavbar" aria-controls="mainnavbar" aria-expanded="false" aria-label="Toggle navigation")
+				span.navbar-toggler-icon
+			#mainnavbar.collapse.navbar-collapse.mr-auto.flex-row-reverse
+				ul.navbar-nav.navbar-right
+					li.nav-item
+						a.nav-link(href="filter.html") Фильмы
+					li.nav-item
+						a.nav-link(href="#") Сериалы
+					li.nav-item
+						a.nav-link(href="#") Подборки
+					li.nav-item.search-bar
+						input(type="search" placeholder="Поиск")#search
+						i.fa.fa-search.search-icon
+					li.nav-item
+						a.nav-link(href="#") Вход 

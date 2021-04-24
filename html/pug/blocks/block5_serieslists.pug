@@ -1,0 +1,32 @@
+mixin slider
+	.slider
+		input(type="radio" name="slide_switch" id="series1" checked)
+		label(for="series1")
+			img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg" width="100")
+		img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg")
+	
+		input(type="radio" name="slide_switch" id="series2")
+		label(for="series2")
+			img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg" width="100")
+		img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg")
+
+
+.movieslists
+	.container
+		.row
+			.col-lg-3
+				h3.text-nowrap Показать больше
+			.col-lg-9
+				input#seriestab1.tab-style(type="radio" name="seriestabs" checked)
+				label(for="tab1") Новые сериалы
+				input#seriestab2.tab-style(type="radio" name="seriestabs")
+				label(for="tab2") Лучшие сериалы за месяц
+				input#seriestab3.tab-style(type="radio" name="seriestabs")
+				label(for="tab3") Рекомендации
+
+				section#seriescontent1
+					+slider
+				section#seriescontent2
+					p txt
+				section#seriescontent3
+					p txt

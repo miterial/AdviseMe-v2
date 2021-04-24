@@ -1,0 +1,83 @@
+.filter
+	h1.text-center.py-3 НАЙТИ ФИЛЬМ
+	.filter--top
+		.container
+			.row
+				.col-lg-6
+					h3 Настройки фильтрации
+					p Укажите параметры для поиска интересующих вас фильмов (отрывается панель фильтра, сдвигает следующий блок)
+					button.dark-button Открыть фильтр
+				.col-lg-6
+					h3 Точность рекомендаций: 80%
+					p Вы можете повысить качество рекомендаций, поставив больше оценок фильмам и сериалам (прокрутка к секции с фильмами)
+					button.dark-button Поставить оценки
+	.filter--settings
+		.container
+			.row
+				.col-lg-12.col-xs-12
+					#regular-slider.sliders
+			.row
+				.col-lg-6.col-xs-12
+					h3 Жанры
+					ul.toggles
+						li
+							input.tgl-skewed(type="checkbox" name="movie" id="inp-adventures" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-adventures") Приключения
+						li
+							input.tgl-skewed(type="checkbox" name="movie" id="inp-comedy" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-comedy") Комедия
+						li
+							input.tgl-skewed(type="checkbox" name="movie" id="inp-crime" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-crime") Криминал
+						li
+							input.tgl-skewed(type="checkbox" name="movie" id="inp-documentary" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-documentary") Документальный
+						li
+							input.tgl-skewed(type="checkbox" name="movie" id="inp-drama" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-drama") Драма
+						li
+							input.tgl-skewed(type="checkbox" name="movie" id="inp-family" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-family") Семейный
+
+					h3 Страны
+					ul.toggles
+						li
+							input.tgl-skewed(type="checkbox" name="country" id="inp-usa" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-usa") США
+						li
+							input.tgl-skewed(type="checkbox" name="country" id="inp-ussr" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-ussr") СССР
+						li
+							input.tgl-skewed(type="checkbox" name="country" id="inp-france" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-ussr") Франция
+						li
+							input.tgl-skewed(type="checkbox" name="country" id="inp-canada" value="value" data-toggle="toggle")
+							label.tgl-btn(for="inp-canada") Канада
+				.col-lg-6.col-xs-12
+					h3 Минимальная оценка
+					.row
+						.col-lg-3.col-sm-2
+							p IMDB
+						.col-lg-8.col-sm-9
+							#rate-slider1.sliders
+						.col-lg-1.col-sm-1
+							p#rate-text1 8.0
+					.row
+						.col-lg-3.col-md-2.col-sm-3
+							p Кинопоиск
+						.col-lg-8.col-md-9.col-sm-7
+							#rate-slider2.sliders
+						.col-lg-1.col-md-1.col-sm-2
+							p#rate-text2 8.0
+					.row
+						.col-lg-3.col-sm-2
+							p AdviseMe
+						.col-lg-8.col-sm-9
+							#rate-slider3.sliders
+						.col-lg-1.col-sm-1
+							p#rate-text3 8.0
+					.row
+						.col-auto
+							button.light-button Сбросить фильтр
+						.col-auto
+							button.light-button Начать поиск

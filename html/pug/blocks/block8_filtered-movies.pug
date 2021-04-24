@@ -1,0 +1,36 @@
+mixin filtered-movie
+	.filtered-movies--item
+		a(href="/movie.html")
+			img(src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px")
+			.text-center
+				p Title
+
+h1.text-center.py-3 Рекомендованные фильмы
+.filtered-movies.container
+	.d-flex.flex-wrap.text-center
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+		+filtered-movie
+	.pagination.d-flex.justify-content-center
+		a(href="#") &laquo;
+		a.active(href="#") 1
+		a(href="#") 2
+		a(href="#") 3
+		a(href="#") 4
+		a(href="#") 5
+		a(href="#") &raquo;

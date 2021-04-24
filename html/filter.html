@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>AdviseMe</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <link href="./dist/css/mystyle.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-light navbar-expand-lg">
+        <div class="container">
+          <div class="navbar-header logo"><a class="navbar-brand title" href="#">AdviseMe</a></div>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainnavbar" aria-controls="mainnavbar" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+          <div class="collapse navbar-collapse mr-auto flex-row-reverse" id="mainnavbar">
+            <ul class="navbar-nav navbar-right">
+              <li class="nav-item"><a class="nav-link" href="filter.html">Фильмы</a></li>
+              <li class="nav-item"><a class="nav-link" href="#">Сериалы</a></li>
+              <li class="nav-item"><a class="nav-link" href="#">Подборки</a></li>
+              <li class="nav-item search-bar">
+                <input type="search" placeholder="Поиск" id="search"/><i class="fa fa-search search-icon"></i>
+              </li>
+              <li class="nav-item"><a class="nav-link" href="#">Вход </a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <div class="filter">
+      <h1 class="text-center py-3">НАЙТИ ФИЛЬМ</h1>
+      <div class="filter--top">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6">
+              <h3>Настройки фильтрации</h3>
+              <p>Укажите параметры для поиска интересующих вас фильмов (отрывается панель фильтра, сдвигает следующий блок)</p>
+              <button class="dark-button">Открыть фильтр</button>
+            </div>
+            <div class="col-lg-6">
+              <h3>Точность рекомендаций: 80%</h3>
+              <p>Вы можете повысить качество рекомендаций, поставив больше оценок фильмам и сериалам (прокрутка к секции с фильмами)</p>
+              <button class="dark-button">Поставить оценки</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="filter--settings">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12 col-xs-12">
+              <div class="sliders" id="regular-slider"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6 col-xs-12">
+              <h3>Жанры</h3>
+              <ul class="toggles">
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="movie" id="inp-adventures" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-adventures">Приключения</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="movie" id="inp-comedy" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-comedy">Комедия</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="movie" id="inp-crime" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-crime">Криминал</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="movie" id="inp-documentary" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-documentary">Документальный</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="movie" id="inp-drama" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-drama">Драма</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="movie" id="inp-family" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-family">Семейный</label>
+                </li>
+              </ul>
+              <h3>Страны</h3>
+              <ul class="toggles">
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="country" id="inp-usa" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-usa">США</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="country" id="inp-ussr" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-ussr">СССР</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="country" id="inp-france" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-ussr">Франция</label>
+                </li>
+                <li>
+                  <input class="tgl-skewed" type="checkbox" name="country" id="inp-canada" value="value" data-toggle="toggle"/>
+                  <label class="tgl-btn" for="inp-canada">Канада</label>
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-6 col-xs-12">
+              <h3>Минимальная оценка</h3>
+              <div class="row">
+                <div class="col-lg-3 col-sm-2">
+                  <p>IMDB</p>
+                </div>
+                <div class="col-lg-8 col-sm-9">
+                  <div class="sliders" id="rate-slider1"></div>
+                </div>
+                <div class="col-lg-1 col-sm-1">
+                  <p id="rate-text1">8.0</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-3 col-md-2 col-sm-3">
+                  <p>Кинопоиск</p>
+                </div>
+                <div class="col-lg-8 col-md-9 col-sm-7">
+                  <div class="sliders" id="rate-slider2"></div>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-2">
+                  <p id="rate-text2">8.0</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-3 col-sm-2">
+                  <p>AdviseMe</p>
+                </div>
+                <div class="col-lg-8 col-sm-9">
+                  <div class="sliders" id="rate-slider3"></div>
+                </div>
+                <div class="col-lg-1 col-sm-1">
+                  <p id="rate-text3">8.0</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-auto">
+                  <button class="light-button">Сбросить фильтр</button>
+                </div>
+                <div class="col-auto">
+                  <button class="light-button">Начать поиск</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h1 class="text-center py-3">Рекомендованные фильмы</h1>
+    <div class="filtered-movies container">
+      <div class="d-flex flex-wrap text-center">
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+            <div class="filtered-movies--item"><a href="/movie.html"><img src="http://static.hdrezka.ac/i/2016/10/2/n96c764988a92nm60j31w.jpg" alt="movie" width="150px"/>
+                <div class="text-center">
+                  <p>Title</p>
+                </div></a></div>
+      </div>
+      <div class="pagination d-flex justify-content-center"><a href="#">&laquo;</a><a class="active" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a><a href="#">&raquo;</a></div>
+    </div>
+    <footer class="footer text-center">
+      <p>AdviseMe, all rights reserved</p>
+    </footer>
+  </body>
+  <script src="./dist/js/myscript.js"></script>
+</html>

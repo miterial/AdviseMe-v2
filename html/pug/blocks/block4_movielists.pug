@@ -1,0 +1,68 @@
+mixin slider
+	.slider
+		input(type="radio" name="slide_switch" id="id1" checked)
+		label(for="id1")
+			img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg" width="100")
+		img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg")
+	
+		input(type="radio" name="slide_switch" id="id2")
+		label(for="id2")
+			img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg" width="100")
+		img(src="http://thecodeplayer.com/uploads/media/3yiC6Yq.jpg")
+
+mixin slide
+	.slider-item.col-md-3
+		a(href="#")
+			img(src="http://static.hdrezka.ac/i/2017/10/24/n3c8d757fa014mu38o49e.jpg" alt="movie" width="150px")
+		.text-center
+			p Title
+
+.movieslists
+	.container
+		.row
+			.col-lg-9
+				input#tab1.tab-style(type="radio" name="tabs" checked)
+				label(for="tab1") Новые фильмы
+				input#tab2.tab-style(type="radio" name="tabs")
+				label(for="tab2") Лучшие фильмы за месяц
+				input#tab3.tab-style(type="radio" name="tabs")
+				label(for="tab3") Рекомендации
+
+				section#content1
+					.myslider
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+				section#content2
+					.myslider
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+				section#content3
+					.myslider
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+						+slide
+			.col-lg-3
+				a.text-nowrap.show-more(href="#") Показать больше
