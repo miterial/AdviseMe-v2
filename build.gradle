@@ -1,21 +1,21 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.5.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'org.springframework.boot' version '2.4.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
 
 group = 'com.lanagj'
-version = '0.0.1'
-sourceCompatibility = '1.8'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
 configurations {
-	developmentOnly
-	runtimeClasspath {
-		extendsFrom developmentOnly
-	}
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
 }
 
 repositories {
@@ -23,40 +23,39 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	//testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 
-	// apache commons-math3 (for svd)
-	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    // apache commons-math3 (for svd)
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
-	// tmdb api
-	implementation 'com.uwetrottmann.tmdb2:tmdb-java:2.2.0'
+    // tmdb api
+    implementation 'com.uwetrottmann.tmdb2:tmdb-java:2.2.0'
 
-	// for stemming
-	implementation group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '8.5.1'
-	implementation group: 'org.apache.lucene', name: 'lucene-core', version: '8.5.1'
-	implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '8.5.1'
+    // for stemming
+    implementation group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '8.5.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-core', version: '8.5.1'
+    implementation group: 'org.apache.lucene', name: 'lucene-queryparser', version: '8.5.1'
 
-	// poi (for xls export)
-	implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
-	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
+    // poi (for xls export)
+    implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
 
-	// apache commons (for reading file lines in reverse order)
-	compile group: 'commons-io', name: 'commons-io', version: '2.7'
+    // apache commons (for reading file lines in reverse order)
+    compile group: 'commons-io', name: 'commons-io', version: '2.7'
 
-	compile fileTree(dir: '/dist', include: '*.jar')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+	testImplementation 'org.springframework.security:spring-security-test'
 
+    compile fileTree(dir: '/dist', include: '*.jar')
 }
 
 test {

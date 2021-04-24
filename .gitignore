@@ -33,3 +33,5 @@ out/
 src/main/resources/application.properties
 test/
 movielens/
+*.docx
+*.xlsx
