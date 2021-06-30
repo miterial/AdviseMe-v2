@@ -1,6 +1,6 @@
 package com.lanagj.adviseme.recommender.nlp;
 
-import com.lanagj.adviseme.entity.movie.MovieToNLPConverter;
+import com.lanagj.adviseme.entity.movies.MovieToNLPConverter;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
 import com.lanagj.adviseme.entity.similarity.CompareResultRepository;
 import com.lanagj.adviseme.recommender.nlp.weight.DocumentStatsToArrayConverter;

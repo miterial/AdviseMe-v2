@@ -4,7 +4,7 @@ import com.lanagj.adviseme.configuration.ApplicationSettings;
 import com.lanagj.adviseme.controller.exception.EntityNotFoundException;
 import com.lanagj.adviseme.controller.movie.MovieService;
 import com.lanagj.adviseme.controller.movie.UserMovieDtoOut;
-import com.lanagj.adviseme.entity.movie.Movie;
+import com.lanagj.adviseme.entity.movies.Movie;
 import com.lanagj.adviseme.entity.movie_list.UserMovieStatus;
 import com.lanagj.adviseme.entity.movie_list.UserMovie;
 import com.lanagj.adviseme.entity.movie_list.UserMovieRepository;
@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.NumberFormat;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;

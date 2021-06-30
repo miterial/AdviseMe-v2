@@ -1,4 +1,4 @@
-package com.lanagj.adviseme.entity.movie;
+package com.lanagj.adviseme.entity.movies;
 
 import com.lanagj.adviseme.recommender.nlp.preprocessing.PorterStemming;
 import lombok.AccessLevel;

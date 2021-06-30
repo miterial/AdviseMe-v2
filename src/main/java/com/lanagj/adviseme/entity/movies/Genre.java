@@ -1,4 +1,4 @@
-package com.lanagj.adviseme.entity.movie;
+package com.lanagj.adviseme.entity.movies;
 
 import lombok.AllArgsConstructor;
 

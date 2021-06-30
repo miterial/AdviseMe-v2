@@ -2,7 +2,7 @@ package com.lanagj.adviseme.recommender.nlp.lsa;
 
 import com.lanagj.adviseme.AdviseMeApplicationTests;
 import com.lanagj.adviseme.configuration.AlgorithmType;
-import com.lanagj.adviseme.entity.movie.Movie;
+import com.lanagj.adviseme.entity.movies.Movie;
 import com.lanagj.adviseme.entity.similarity.CompareResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

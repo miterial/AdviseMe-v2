@@ -1,8 +1,8 @@
 package com.lanagj.adviseme.controller.movie;
 
 import com.lanagj.adviseme.controller.exception.EntityNotFoundException;
-import com.lanagj.adviseme.entity.movie.Movie;
-import com.lanagj.adviseme.entity.movie.MovieRepository;
+import com.lanagj.adviseme.entity.movies.Movie;
+import com.lanagj.adviseme.entity.movies.MovieRepository;
 import com.lanagj.adviseme.entity.movie_list.UserMovie;
 import com.lanagj.adviseme.entity.user.User;
 import com.lanagj.adviseme.entity.user.UserRepository;
@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.text.NumberFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -31,7 +30,7 @@ public class MovieService {
 
         User user = this.userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User"));
 
-        List<String> moviesIds = new ArrayList<>();
+        Set<String> moviesIds = new HashSet<>();
         for (UserMovie ratedMovie : user.getMovies()) {
             moviesIds.add(ratedMovie.getId());
         }

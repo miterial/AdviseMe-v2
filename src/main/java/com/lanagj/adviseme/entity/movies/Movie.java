@@ -1,43 +1,50 @@
-package com.lanagj.adviseme.entity.movie;
+package com.lanagj.adviseme.entity.movies;
 
 import com.lanagj.adviseme.entity.Entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-@Document
+@Document("movies")
 @Getter
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Movie extends Entity {
 
     @Getter
+    final
     Integer tmdbId;
-    List<Genre> genres;
+    final List<Genre> genres;
     /**
      * Localized title
      */
-    String title;
-    String overview;
+    final String title;
+    final String overview;
     Date releaseDate;
-    Integer voteCount;
-    Float voteAverage;
+    final Integer voteCount;
+    final Float voteAverage;
 
-    @PersistenceConstructor
-    public Movie(@NonNull Integer tmdbId, List<Genre> genres, String title, @NonNull String overview, Date releaseDate, Integer voteCount, Float voteAverage) {
+    public Movie(@NonNull Integer tmdbId, List<Genre> genres, String title, @NonNull String overview, String releaseDate, Integer voteCount, Float voteAverage) {
 
         this.tmdbId = tmdbId;
         this.genres = genres;
         this.title = title;
         this.overview = overview;
-        this.releaseDate = releaseDate;
         this.voteCount = voteCount;
         this.voteAverage = voteAverage;
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            this.releaseDate = sdf.parse(releaseDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public Movie(Integer tmdbId, String overview) {

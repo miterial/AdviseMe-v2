@@ -1,37 +1,37 @@
 package com.lanagj.adviseme.converter;
 
-import com.uwetrottmann.tmdb2.entities.BaseMovie;
-import com.uwetrottmann.tmdb2.entities.Genre;
+import com.lanagj.adviseme.entity.movies.Movie;
+import info.movito.themoviedbapi.model.Genre;
+import info.movito.themoviedbapi.model.MovieDb;
 import lombok.NonNull;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class TmdbToMovieConverter implements Converter<BaseMovie, com.lanagj.adviseme.entity.movie.Movie> {
+@Service
+public class TmdbToMovieConverter implements Converter<MovieDb, Movie> {
 
     @Override
-    public com.lanagj.adviseme.entity.movie.Movie convert(@NonNull BaseMovie source) {
+    public Movie convert(@NonNull MovieDb source) {
 
-        List<com.lanagj.adviseme.entity.movie.Genre> genres = new ArrayList<>();
-        if(source.genres != null) {
-            for (Genre genre : source.genres) {
-                genres.add(new com.lanagj.adviseme.entity.movie.Genre(genre.id, genre.name));
+        List<com.lanagj.adviseme.entity.movies.Genre> genres = new ArrayList<>();
+        if (source.getGenres() != null) {
+            for (Genre genre : source.getGenres()) {
+                genres.add(new com.lanagj.adviseme.entity.movies.Genre(genre.getId(), genre.getName()));
             }
         }
 
-        com.lanagj.adviseme.entity.movie.Movie movie = new com.lanagj.adviseme.entity.movie.Movie(
-                source.id,
+        Movie movie = new Movie(
+                source.getId(),
                 genres,
-                source.title,
-                source.overview,
-                source.release_date,
-                source.vote_count,
-                source.vote_average.floatValue());
+                source.getTitle(),
+                source.getOverview(),
+                source.getReleaseDate(),
+                source.getVoteCount(),
+                source.getVoteAverage());
 
         return movie;
-
     }
 }

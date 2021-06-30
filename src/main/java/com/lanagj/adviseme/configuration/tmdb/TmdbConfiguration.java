@@ -1,9 +1,9 @@
 package com.lanagj.adviseme.configuration.tmdb;
 
-import com.uwetrottmann.tmdb2.Tmdb;
-import com.uwetrottmann.tmdb2.services.DiscoverService;
-import com.uwetrottmann.tmdb2.services.GenresService;
-import com.uwetrottmann.tmdb2.services.MoviesService;
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbDiscover;
+import info.movito.themoviedbapi.TmdbGenre;
+import info.movito.themoviedbapi.TmdbMovies;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,34 +16,34 @@ public class TmdbConfiguration {
     @Value("${tmdb.secret}")
     String tmdbSecret;
 
-    private Tmdb tmdb;
+    private TmdbApi tmdb;
 
     @PostConstruct
     public void init() {
-        tmdb = new Tmdb(this.tmdbSecret);
+        tmdb = new TmdbApi(this.tmdbSecret);
     }
 
     @Bean
-    public MoviesService getMoviesService() {
-        if(tmdb.apiKey() == null) {
+    public TmdbMovies getMoviesService() {
+        if(tmdb.getApiKey() == null) {
             throw new IllegalArgumentException("TMDb API key is not set!");
         }
-        return tmdb.moviesService();
+        return tmdb.getMovies();
     }
 
     @Bean
-    public DiscoverService getDiscoverService() {
-        if(tmdb.apiKey() == null) {
+    public TmdbDiscover getDiscoverService() {
+        if(tmdb.getApiKey() == null) {
             throw new IllegalArgumentException("TMDb API key is not set!");
         }
-        return tmdb.discoverService();
+        return tmdb.getDiscover();
     }
 
     @Bean
-    public GenresService getGenresService() {
-        if(tmdb.apiKey() == null) {
+    public TmdbGenre getGenresService() {
+        if(tmdb.getApiKey() == null) {
             throw new IllegalArgumentException("TMDb API key is not set!");
         }
-        return tmdb.genreService();
+        return tmdb.getGenre();
     }
 }
