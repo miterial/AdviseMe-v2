@@ -13,11 +13,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class EvaluationUserMovie extends AbstractUserMovie {
 
     private AlgorithmType algorithmType;
+    private UserMovieStatus status;
 
     public EvaluationUserMovie(Integer userId, Integer movieId, UserMovieStatus status, AlgorithmType algorithmType) {
 
-        super(userId, movieId, status);
+        super(userId, movieId);
         this.algorithmType = algorithmType;
+        this.status = status;
     }
 
     @Override

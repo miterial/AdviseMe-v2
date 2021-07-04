@@ -11,9 +11,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString(callSuper = true)
 public class TestUserMovie extends AbstractUserMovie {
 
+    UserMovieStatus status;
+
     public TestUserMovie(Integer userId, Integer movieId, UserMovieStatus status) {
 
-        super(userId, movieId, status);
+        super(userId, movieId);
+        this.status = status;
     }
 
     @Override

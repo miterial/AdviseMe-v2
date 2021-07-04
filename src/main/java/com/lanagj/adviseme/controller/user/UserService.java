@@ -66,7 +66,7 @@ public class UserService {
 
         User user = this.userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User"));
 
-        Map<String, UserMovie> userMovies = user.getMovies().stream().filter(m -> m.getStatus() == userMovieStatus).collect(Collectors.toMap(UserMovie::getMovieId, Function.identity()));
+        Map<String, UserMovie> userMovies = new HashMap<>()/*user.getMovies().stream().filter(m -> m.getStatus() == userMovieStatus).collect(Collectors.toMap(UserMovie::getMovieId, Function.identity()))*/;
 
         List<Movie> movies = this.movieService.getMovies(userMovies.keySet());
 

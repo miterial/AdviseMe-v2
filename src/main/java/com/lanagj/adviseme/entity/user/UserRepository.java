@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, String> {
 
-    List<User> findByRole(Role simple);
+    List<User> findByRole(Role role);
 
     User findByLogin(String username);
 }

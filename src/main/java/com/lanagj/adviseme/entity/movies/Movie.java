@@ -17,17 +17,33 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Movie extends Entity {
 
-    @Getter
-    final
-    Integer tmdbId;
+    final Integer tmdbId;
+
     final List<Genre> genres;
+
     /**
      * Localized title
      */
     final String title;
+
+    /**
+     * @see info.movito.themoviedbapi.model.MovieDb.overview
+     */
     final String overview;
+
+    /**
+     * @see info.movito.themoviedbapi.model.MovieDb.release_date
+     */
     Date releaseDate;
+
+    /**
+     * Amount of rates on TMDB
+     */
     final Integer voteCount;
+
+    /**
+     * TMDB average rating
+     */
     final Float voteAverage;
 
     public Movie(@NonNull Integer tmdbId, List<Genre> genres, String title, @NonNull String overview, String releaseDate, Integer voteCount, Float voteAverage) {
@@ -39,15 +55,18 @@ public class Movie extends Entity {
         this.voteCount = voteCount;
         this.voteAverage = voteAverage;
 
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            this.releaseDate = sdf.parse(releaseDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if(releaseDate != null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                this.releaseDate = sdf.parse(releaseDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public Movie(Integer tmdbId, String overview) {
         this(tmdbId, null, null, overview, null, null, null);
     }
+
 }

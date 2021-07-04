@@ -4,17 +4,13 @@ import com.lanagj.adviseme.entity.user.Role;
 import com.lanagj.adviseme.entity.user.User;
 import com.lanagj.adviseme.entity.user.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user.getLogin().contains("admin"))
             authorities = Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_ADMIN.name()));
         else
-            authorities = Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_SIMPLE.name()));
+            authorities = Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_USER.name()));
 
         UserPrincipal userPrincipal = new UserPrincipal(user.getId(), user.getLogin(), "{noop}" + user.getPassword() , authorities);
 
